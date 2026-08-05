@@ -1,13 +1,29 @@
-import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
+import 'package:flutter/material.dart';
+import 'providers.dart';
+import 'router.dart';
+import 'theme.dart';
 import '../providers/theme_provider.dart';
-import '../providers/connectivity_provider.dart';
-import '../providers/navigation_provider.dart';
+import '../core/constants/app_strings.dart';
 
-class AppProviders {
-  static List<SingleChildWidget> get providers => [
-    ChangeNotifierProvider(create: (_) => ThemeProvider()),
-    ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
-    ChangeNotifierProvider(create: (_) => NavigationProvider()),
-  ];
+class CrmApp extends StatelessWidget {
+  const CrmApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: AppProviders.providers,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp.router(
+            title: AppStrings.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            routerConfig: AppRouter.router,
+          );
+        },
+      ),
+    );
+  }
 }
