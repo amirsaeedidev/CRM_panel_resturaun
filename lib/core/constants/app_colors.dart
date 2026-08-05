@@ -1,59 +1,72 @@
 import 'package:flutter/material.dart';
 
-abstract class AppColors {
-  // Primary Colors
-  static const Color primary = Color(0xFFB71C1C); // Luxury Red / Deep Crimson
-  static const Color primaryLight = Color(0xFFE53935);
-  static const Color primaryDark = Color(0xFF7F0000);
-  static const Color onPrimary = Color(0xFFFFFFFF);
+/// Centralized color system for the CRM Panel.
+class AppColors {
+  AppColors._();
 
-  // Background Colors
-  static const Color background = Color(0xFF0A0A0A); // Dark Background
-  static const Color onBackground = Color(0xFFFFFFFF);
-  static const Color surface = Color(0xFF141414); // Graphite Surface
-  static const Color surfaceLight = Color(0xFF1E1E1E);
-  static const Color surfaceVariant = Color(0xFF242424);
-  static const Color onSurface = Color(0xFFFFFFFF);
-  static const Color onSurfaceVariant = Color(0xFFB0B0B0); // Grey Text
+  // --- Primary Colors ---
+  static const Color primary = Color(0xFF2563EB); // A strong professional blue
+  static const Color primaryLight = Color(0xFF60A5FA);
+  static const Color primaryDark = Color(0xFF1E40AF);
 
-  // Semantic & Status Colors
-  static const Color success = Color(0xFF00C853); // Green Success
-  static const Color onSuccess = Color(0xFFFFFFFF);
-  static const Color warning = Color(0xFFFFAB00); // Amber Warning
-  static const Color onWarning = Color(0xFF000000);
-  static const Color info = Color(0xFF2962FF); // Blue Info
-  static const Color onInfo = Color(0xFFFFFFFF);
-  static const Color error = Color(0xFFD32F2F); // Material Error
-  static const Color onError = Color(0xFFFFFFFF);
+  // --- Secondary / Accent Colors ---
+  static const Color secondary = Color(0xFF0EA5E9); // Sky blue
+  static const Color accent = Color(0xFFF59E0B); // Amber for highlights
 
-  // Text Colors
-  static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textGrey = Color(0xFF9E9E9E);
-  static const Color textDarkGrey = Color(0xFF616161);
+  // --- Background & Surface (Light Theme) ---
+  static const Color backgroundLight = Color(0xFFF8FAFC); // Slate 50
+  static const Color surfaceLight = Color(0xFFFFFFFF);
 
-  // Border Colors
-  static const Color border = Color(0xFF2A2A2A);
-  static const Color borderLight = Color(0xFF3D3D3D);
+  // --- Background & Surface (Dark Theme) ---
+  static const Color backgroundDark = Color(0xFF0F172A); // Slate 900
+  static const Color surfaceDark = Color(0xFF1E293B); // Slate 800
 
-  // Chart Colors
-  static const Color chartPrimary = Color(0xFFE53935);
-  static const Color chartSecondary = Color(0xFF1E88E5);
-  static const Color chartTertiary = Color(0xFF43A047);
-  static const Color chartQuaternary = Color(0xFFFB8C00);
-  static const Color chartQuinary = Color(0xFF8E24AA);
+  // --- Text Colors ---
+  static const Color textPrimaryLight = Color(0xFF0F172A); // Slate 900
+  static const Color textSecondaryLight = Color(0xFF475569); // Slate 600
+  static const Color textPrimaryDark = Color(0xFFF1F5F9); // Slate 100
+  static const Color textSecondaryDark = Color(0xFF94A3B8); // Slate 400
 
-  // Gradient Colors
-  static const Color gradientStart = Color(0xFFB71C1C);
-  static const Color gradientEnd = Color(0xFFE53935);
-  static const Color gradientSuccessStart = Color(0xFF00C853);
-  static const Color gradientSuccessEnd = Color(0xFF009624);
-  static const Color gradientDangerStart = Color(0xFFD32F2F);
-  static const Color gradientDangerEnd = Color(0xFFB71C1C);
+  // --- Status Colors ---
+  static const Color success = Color(0xFF10B981); // Emerald 500
+  static const Color error = Color(0xFFEF4444); // Red 500
+  static const Color warning = Color(0xFFF59E0B); // Amber 500
+  static const Color info = Color(0xFF3B82F6); // Blue 500
 
-  // Opacity Colors (For glass feeling without transparency abuse)
-  static const Color primaryOpacity10 = Color(0x1AB71C1C);
-  static const Color primaryOpacity20 = Color(0x33B71C1C);
-  static const Color whiteOpacity5 = Color(0x0DFFFFFF);
-  static const Color whiteOpacity10 = Color(0x1AFFFFFF);
-  static const Color whiteOpacity20 = Color(0x33FFFFFF);
+  // --- Borders & Dividers ---
+  static const Color borderLight = Color(0xFFE2E8F0); // Slate 200
+  static const Color borderDark = Color(0xFF334155); // Slate 700
+
+  // --- Helper Context Methods ---
+  // These methods make it easy to use theme-aware colors in widgets
+  
+  static Color getBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? backgroundDark
+        : backgroundLight;
+  }
+
+  static Color getSurface(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? surfaceDark
+        : surfaceLight;
+  }
+
+  static Color getPrimaryText(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textPrimaryDark
+        : textPrimaryLight;
+  }
+
+  static Color getSecondaryText(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textSecondaryDark
+        : textSecondaryLight;
+  }
+
+  static Color getBorder(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? borderDark
+        : borderLight;
+  }
 }
