@@ -1,30 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/constants/app_routes.dart';
-import '../features/auth/screens/login_screen.dart';
-// TODO: Import other screens (Dashboard, Orders, etc.) when created
+import '../core/widgets/main_layout.dart';
+
+// Placeholder pages to ensure the app builds and we can test navigation
+class _DummyPage extends StatelessWidget {
+  final String title;
+  const _DummyPage(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        title,
+        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static GoRouter get router => GoRouter(
-        initialLocation: AppRoutes.login,
+        initialLocation: AppRoutes.dashboard,
         navigatorKey: _rootNavigatorKey,
         routes: [
-          GoRoute(
-            path: AppRoutes.login,
-            name: AppRoutes.login,
-            builder: (context, state) => const LoginScreen(),
+          // ShellRoute applies the MainLayout (Sidebar + Topbar) to all these routes
+          ShellRoute(
+            builder: (context, state, child) => MainLayout(child: child),
+            routes: [
+              GoRoute(
+                path: AppRoutes.dashboard,
+                name: AppRoutes.dashboard,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('داشبورد'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.orders,
+                name: AppRoutes.orders,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('سفارشات'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.products,
+                name: AppRoutes.products,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('محصولات'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.customers,
+                name: AppRoutes.customers,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('مشتریان'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.categories,
+                name: AppRoutes.categories,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('دسته‌بندی‌ها'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.reports,
+                name: AppRoutes.reports,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('گزارشات'),
+                ),
+              ),
+              GoRoute(
+                path: AppRoutes.settings,
+                name: AppRoutes.settings,
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: _DummyPage('تنظیمات'),
+                ),
+              ),
+            ],
           ),
-          // TODO: Add ShellRoute for Dashboard layout (Sidebar + Topbar) later
-          // Example:
-          // GoRoute(
-          //   path: AppRoutes.dashboard,
-          //   name: AppRoutes.dashboard,
-          //   builder: (context, state) => const DashboardScreen(),
-          // ),
         ],
-        errorBuilder: (context, state) => const Scaffold(
+        errorBuilder: (context, state) => Scaffold(
           body: Center(
             child: Text('Page not found (404)'),
           ),
