@@ -5,6 +5,9 @@ import '../core/widgets/main_layout.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/categories/screens/categories_list_screen.dart';
 import '../features/categories/screens/category_form_screen.dart';
+import '../features/products/screens/products_list_screen.dart';
+import '../features/products/screens/product_form_screen.dart';
+import '../features/products/screens/product_details_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -52,7 +55,7 @@ class AppRouter {
                 path: AppRoutes.products,
                 name: AppRoutes.products,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('محصولات'),
+                  child: ProductsListScreen(),
                 ),
               ),
               GoRoute(
@@ -86,7 +89,7 @@ class AppRouter {
             ],
           ),
           
-          // Routes OUTSIDE the Main Layout (Full Screen pages like Forms)
+          // --- Category Full Screen Routes ---
           GoRoute(
             path: '/categories/add',
             name: 'category_add',
@@ -103,6 +106,38 @@ class AppRouter {
               final categoryId = int.parse(state.pathParameters['id']!);
               return MaterialPage(
                 child: CategoryFormScreen(categoryId: categoryId),
+              );
+            },
+          ),
+
+          // --- Product Full Screen Routes ---
+          GoRoute(
+            path: '/products/add',
+            name: 'product_add',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) => const MaterialPage(
+              child: ProductFormScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/products/edit/:id',
+            name: 'product_edit',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final productId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: ProductFormScreen(productId: productId),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/products/details/:id',
+            name: 'product_details',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final productId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: ProductDetailsScreen(productId: productId),
               );
             },
           ),
