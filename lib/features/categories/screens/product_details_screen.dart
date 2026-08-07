@@ -4,6 +4,7 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/custom_chip.dart';
+import '../../../core/theme/app_radius.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
   final int productId;
