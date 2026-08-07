@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../core/constants/app_routes.dart';
 import '../core/widgets/main_layout.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
+import '../features/categories/screens/categories_list_screen.dart';
+import '../features/categories/screens/category_form_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -28,6 +30,7 @@ class AppRouter {
         initialLocation: AppRoutes.dashboard,
         navigatorKey: _rootNavigatorKey,
         routes: [
+          // Routes inside the Main Layout (Sidebar + Topbar)
           ShellRoute(
             builder: (context, state, child) => MainLayout(child: child),
             routes: [
@@ -63,7 +66,7 @@ class AppRouter {
                 path: AppRoutes.categories,
                 name: AppRoutes.categories,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('دسته‌بندی‌ها'),
+                  child: CategoriesListScreen(),
                 ),
               ),
               GoRoute(
@@ -81,6 +84,27 @@ class AppRouter {
                 ),
               ),
             ],
+          ),
+          
+          // Routes OUTSIDE the Main Layout (Full Screen pages like Forms)
+          GoRoute(
+            path: '/categories/add',
+            name: 'category_add',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) => const MaterialPage(
+              child: CategoryFormScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/categories/edit/:id',
+            name: 'category_edit',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final categoryId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: CategoryFormScreen(categoryId: categoryId),
+              );
+            },
           ),
         ],
         errorBuilder: (context, state) => Scaffold(
