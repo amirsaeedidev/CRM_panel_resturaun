@@ -10,6 +10,8 @@ import '../features/products/screens/product_form_screen.dart';
 import '../features/products/screens/product_details_screen.dart';
 import '../features/banners/screens/banners_list_screen.dart';
 import '../features/banners/screens/banner_form_screen.dart';
+import '../features/discounts/screens/discounts_list_screen.dart';
+import '../features/discounts/screens/discount_form_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -75,10 +77,17 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: '/banners', // Added Banners List Route
+                path: '/banners',
                 name: 'banners',
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: BannersListScreen(),
+                ),
+              ),
+              GoRoute(
+                path: '/discounts', // Added Discounts List Route
+                name: 'discounts',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: DiscountsListScreen(),
                 ),
               ),
               GoRoute(
@@ -168,6 +177,27 @@ class AppRouter {
               final bannerId = int.parse(state.pathParameters['id']!);
               return MaterialPage(
                 child: BannerFormScreen(bannerId: bannerId),
+              );
+            },
+          ),
+
+          // --- Discount Full Screen Routes ---
+          GoRoute(
+            path: '/discounts/add',
+            name: 'discount_add',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) => const MaterialPage(
+              child: DiscountFormScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/discounts/edit/:id',
+            name: 'discount_edit',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final discountId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: DiscountFormScreen(discountId: discountId),
               );
             },
           ),
