@@ -8,6 +8,8 @@ import '../features/categories/screens/category_form_screen.dart';
 import '../features/products/screens/products_list_screen.dart';
 import '../features/products/screens/product_form_screen.dart';
 import '../features/products/screens/product_details_screen.dart';
+import '../features/banners/screens/banners_list_screen.dart';
+import '../features/banners/screens/banner_form_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -70,6 +72,13 @@ class AppRouter {
                 name: AppRoutes.categories,
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: CategoriesListScreen(),
+                ),
+              ),
+              GoRoute(
+                path: '/banners', // Added Banners List Route
+                name: 'banners',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: BannersListScreen(),
                 ),
               ),
               GoRoute(
@@ -138,6 +147,27 @@ class AppRouter {
               final productId = int.parse(state.pathParameters['id']!);
               return MaterialPage(
                 child: ProductDetailsScreen(productId: productId),
+              );
+            },
+          ),
+
+          // --- Banner Full Screen Routes ---
+          GoRoute(
+            path: '/banners/add',
+            name: 'banner_add',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) => const MaterialPage(
+              child: BannerFormScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/banners/edit/:id',
+            name: 'banner_edit',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final bannerId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: BannerFormScreen(bannerId: bannerId),
               );
             },
           ),
