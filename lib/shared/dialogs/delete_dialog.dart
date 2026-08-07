@@ -52,7 +52,7 @@ class DeleteDialog extends StatelessWidget {
           label: AppStrings.delete,
           type: AppButtonType.primary,
           width: 120,
-          backgroundColor: AppColors.error,
+         // backgroundColor: AppColors.error,
           onPressed: () {
             Navigator.of(context).pop();
             onDelete();

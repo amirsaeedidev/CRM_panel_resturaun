@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/constants/app_routes.dart';
 import '../core/widgets/main_layout.dart';
+import '../features/dashboard/screens/dashboard_screen.dart';
 
-// Placeholder pages to ensure the app builds and we can test navigation
+// Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
   final String title;
   const _DummyPage(this.title);
@@ -27,7 +28,6 @@ class AppRouter {
         initialLocation: AppRoutes.dashboard,
         navigatorKey: _rootNavigatorKey,
         routes: [
-          // ShellRoute applies the MainLayout (Sidebar + Topbar) to all these routes
           ShellRoute(
             builder: (context, state, child) => MainLayout(child: child),
             routes: [
@@ -35,7 +35,7 @@ class AppRouter {
                 path: AppRoutes.dashboard,
                 name: AppRoutes.dashboard,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('داشبورد'),
+                  child: DashboardScreen(),
                 ),
               ),
               GoRoute(

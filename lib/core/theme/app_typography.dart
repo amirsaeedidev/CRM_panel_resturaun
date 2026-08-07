@@ -1,107 +1,136 @@
-// lib/core/theme/app_typography.dart
-
 import 'package:flutter/material.dart';
 
-abstract class AppTypography {
-  static const String fontFamily = 'Lalezar';
+class AppTypography {
+  AppTypography._();
 
-  static TextTheme get textTheme {
-    return const TextTheme(
-      displayLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 57.0,
-        fontWeight: FontWeight.w400,
-        height: 1.15,
-        letterSpacing: -0.5,
-      ),
-      displayMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 45.0,
-        fontWeight: FontWeight.w400,
-        height: 1.2,
-        letterSpacing: -0.25,
-      ),
-      displaySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 36.0,
-        fontWeight: FontWeight.w400,
-        height: 1.25,
-      ),
-      headlineLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 32.0,
-        fontWeight: FontWeight.w400,
-        height: 1.3,
-      ),
-      headlineMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 28.0,
-        fontWeight: FontWeight.w400,
-        height: 1.3,
-      ),
-      headlineSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 24.0,
-        fontWeight: FontWeight.w400,
-        height: 1.35,
-      ),
-      titleLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 22.0,
-        fontWeight: FontWeight.w400,
-        height: 1.4,
-      ),
-      titleMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 18.0,
-        fontWeight: FontWeight.w400,
-        height: 1.45,
-      ),
-      titleSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16.0,
-        fontWeight: FontWeight.w400,
-        height: 1.5,
-      ),
-      bodyLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16.0,
-        fontWeight: FontWeight.w400,
-        height: 1.6,
-      ),
-      bodyMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14.0,
-        fontWeight: FontWeight.w400,
-        height: 1.6,
-      ),
-      bodySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12.0,
-        fontWeight: FontWeight.w400,
-        height: 1.65,
-      ),
-      labelLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14.0,
-        fontWeight: FontWeight.w400,
-        height: 1.4,
-        letterSpacing: 0.1,
-      ),
-      labelMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12.0,
-        fontWeight: FontWeight.w400,
-        height: 1.4,
-        letterSpacing: 0.5,
-      ),
-      labelSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 11.0,
-        fontWeight: FontWeight.w400,
-        height: 1.45,
-        letterSpacing: 0.5,
-      ),
-    );
-  }
+  static const String _fontFamily = 'Lalezar';
+
+  // Display
+  static const TextStyle displayLarge = TextStyle(
+    fontSize: 57,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.12,
+  );
+
+  static const TextStyle displayMedium = TextStyle(
+    fontSize: 45,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.16,
+  );
+
+  static const TextStyle displaySmall = TextStyle(
+    fontSize: 36,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.22,
+  );
+
+  // Headline
+  static const TextStyle headlineLarge = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.25,
+  );
+
+  static const TextStyle headlineMedium = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.29,
+  );
+
+  static const TextStyle headlineSmall = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.33,
+  );
+
+  // Title
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.27,
+  );
+
+  static const TextStyle titleMedium = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.33,
+  );
+
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.43,
+  );
+
+  // Body
+  static const TextStyle bodyLarge = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.50,
+  );
+
+  static const TextStyle bodyMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.43,
+  );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    fontFamily: _fontFamily,
+    height: 1.33,
+  );
+
+  // Label
+  static const TextStyle labelLarge = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.43,
+  );
+
+  static const TextStyle labelMedium = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.33,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    fontFamily: _fontFamily,
+    height: 1.45,
+  );
+
+  // Helper method to apply font family to the whole theme
+  static TextTheme get textTheme => TextTheme(
+        displayLarge: displayLarge,
+        displayMedium: displayMedium,
+        displaySmall: displaySmall,
+        headlineLarge: headlineLarge,
+        headlineMedium: headlineMedium,
+        headlineSmall: headlineSmall,
+        titleLarge: titleLarge,
+        titleMedium: titleMedium,
+        titleSmall: titleSmall,
+        bodyLarge: bodyLarge,
+        bodyMedium: bodyMedium,
+        bodySmall: bodySmall,
+        labelLarge: labelLarge,
+        labelMedium: labelMedium,
+        labelSmall: labelSmall,
+      );
 }

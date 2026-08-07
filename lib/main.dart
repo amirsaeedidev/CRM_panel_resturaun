@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'app/app.dart';
+import 'core/services/logger_service.dart';
+import 'core/services/storage_service.dart';
 
-void main(List<String> args) {
-  runApp(myapp());
-}
+Future<void> main() async {
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
 
-class myapp extends StatefulWidget {
-  const myapp({super.key});
-
-  @override
-  State<myapp> createState() => _myappState();
-}
-
-class _myappState extends State<myapp> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(child: Text('data'),),
-    );
+  try {
+    // Initialize local storage (SharedPreferences)
+    await StorageService.initialize();
+    
+    // TODO: Load .env file here later when connecting to Supabase
+    // await dotenv.load(fileName: ".env");
+    
+    LoggerService.info('Application starting...');
+  } catch (e, st) {
+    LoggerService.error('Initialization failed', error: e, stackTrace: st);
   }
+
+  runApp(const CrmApp());
 }

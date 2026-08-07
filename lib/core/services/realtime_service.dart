@@ -8,7 +8,7 @@ class RealtimeService {
   /// Subscribes to changes (INSERT, UPDATE, DELETE) on a specific table.
   static RealtimeChannel subscribeToTable({
     required String table,
-    required String schema = 'public',
+    String schema = 'public',
     required void Function(PostgresChangePayload payload) onInsert,
     required void Function(PostgresChangePayload payload) onUpdate,
     required void Function(PostgresChangePayload payload) onDelete,
@@ -52,6 +52,7 @@ class RealtimeService {
   /// Unsubscribes from a specific realtime channel.
   static void unsubscribe(RealtimeChannel channel) {
     SupabaseService.client.removeChannel(channel);
-    LoggerService.info('Unsubscribed from channel: ${channel.name}');
+    // Changed from channel.name to channel.topic for supabase_flutter v2
+    LoggerService.info('Unsubscribed from channel: ${channel.topic}');
   }
 }

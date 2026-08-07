@@ -9,7 +9,7 @@ import '../config/supabase_config.dart';
 class UploadService {
   UploadService._();
 
-  static final _uuid = const Uuid();
+  static const _uuid = Uuid();
 
   /// Picks an image from gallery using image_picker
   static Future<XFile?> pickImageFromGallery() async {
@@ -36,7 +36,8 @@ class UploadService {
   /// Picks any file using file_picker
   static Future<File?> pickFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+      // Changed for file_picker v11+ compatibility
+      final result = await FilePicker.pickFiles(allowMultiple: false);
       if (result != null && result.files.single.path != null) {
         return File(result.files.single.path!);
       }
