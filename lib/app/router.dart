@@ -17,22 +17,7 @@ import '../features/customers/screens/customer_details_screen.dart';
 import '../features/orders/screens/orders_list_screen.dart';
 import '../features/orders/screens/order_details_screen.dart';
 import '../features/reports/screens/reports_screen.dart';
-
-// Placeholder pages for routes not yet implemented
-class _DummyPage extends StatelessWidget {
-  final String title;
-  const _DummyPage(this.title);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-      ),
-    );
-  }
-}
+import '../features/settings/screens/settings_screen.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -96,17 +81,17 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.reports, // Updated Reports Route
+                path: AppRoutes.reports,
                 name: AppRoutes.reports,
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: ReportsScreen(),
                 ),
               ),
               GoRoute(
-                path: AppRoutes.settings,
+                path: AppRoutes.settings, // Updated Settings Route
                 name: AppRoutes.settings,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('تنظیمات'),
+                  child: SettingsScreen(),
                 ),
               ),
             ],
