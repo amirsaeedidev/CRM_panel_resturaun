@@ -14,6 +14,8 @@ import '../features/discounts/screens/discounts_list_screen.dart';
 import '../features/discounts/screens/discount_form_screen.dart';
 import '../features/customers/screens/customers_list_screen.dart';
 import '../features/customers/screens/customer_details_screen.dart';
+import '../features/orders/screens/orders_list_screen.dart';
+import '../features/orders/screens/order_details_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -51,10 +53,10 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.orders,
+                path: AppRoutes.orders, // Updated Orders List Route
                 name: AppRoutes.orders,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('سفارشات'),
+                  child: OrdersListScreen(),
                 ),
               ),
               GoRoute(
@@ -65,7 +67,7 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.customers, // Updated Customers List Route
+                path: AppRoutes.customers,
                 name: AppRoutes.customers,
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: CustomersListScreen(),
@@ -213,6 +215,19 @@ class AppRouter {
               final customerId = int.parse(state.pathParameters['id']!);
               return MaterialPage(
                 child: CustomerDetailsScreen(customerId: customerId),
+              );
+            },
+          ),
+
+          // --- Order Full Screen Routes ---
+          GoRoute(
+            path: '/orders/details/:id',
+            name: 'order_details',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final orderId = state.pathParameters['id']!;
+              return MaterialPage(
+                child: OrderDetailsScreen(orderId: orderId),
               );
             },
           ),
