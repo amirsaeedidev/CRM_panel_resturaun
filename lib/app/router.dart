@@ -12,6 +12,8 @@ import '../features/banners/screens/banners_list_screen.dart';
 import '../features/banners/screens/banner_form_screen.dart';
 import '../features/discounts/screens/discounts_list_screen.dart';
 import '../features/discounts/screens/discount_form_screen.dart';
+import '../features/customers/screens/customers_list_screen.dart';
+import '../features/customers/screens/customer_details_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -63,10 +65,10 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.customers,
+                path: AppRoutes.customers, // Updated Customers List Route
                 name: AppRoutes.customers,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('مشتریان'),
+                  child: CustomersListScreen(),
                 ),
               ),
               GoRoute(
@@ -84,7 +86,7 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: '/discounts', // Added Discounts List Route
+                path: '/discounts',
                 name: 'discounts',
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: DiscountsListScreen(),
@@ -198,6 +200,19 @@ class AppRouter {
               final discountId = int.parse(state.pathParameters['id']!);
               return MaterialPage(
                 child: DiscountFormScreen(discountId: discountId),
+              );
+            },
+          ),
+
+          // --- Customer Full Screen Routes ---
+          GoRoute(
+            path: '/customers/details/:id',
+            name: 'customer_details',
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) {
+              final customerId = int.parse(state.pathParameters['id']!);
+              return MaterialPage(
+                child: CustomerDetailsScreen(customerId: customerId),
               );
             },
           ),
