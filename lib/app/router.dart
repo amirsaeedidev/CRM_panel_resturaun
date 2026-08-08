@@ -16,6 +16,7 @@ import '../features/customers/screens/customers_list_screen.dart';
 import '../features/customers/screens/customer_details_screen.dart';
 import '../features/orders/screens/orders_list_screen.dart';
 import '../features/orders/screens/order_details_screen.dart';
+import '../features/reports/screens/reports_screen.dart';
 
 // Placeholder pages for routes not yet implemented
 class _DummyPage extends StatelessWidget {
@@ -53,7 +54,7 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.orders, // Updated Orders List Route
+                path: AppRoutes.orders,
                 name: AppRoutes.orders,
                 pageBuilder: (context, state) => const NoTransitionPage(
                   child: OrdersListScreen(),
@@ -95,10 +96,10 @@ class AppRouter {
                 ),
               ),
               GoRoute(
-                path: AppRoutes.reports,
+                path: AppRoutes.reports, // Updated Reports Route
                 name: AppRoutes.reports,
                 pageBuilder: (context, state) => const NoTransitionPage(
-                  child: _DummyPage('گزارشات'),
+                  child: ReportsScreen(),
                 ),
               ),
               GoRoute(
