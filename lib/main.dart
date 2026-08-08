@@ -4,7 +4,6 @@ import 'core/services/logger_service.dart';
 import 'core/services/storage_service.dart';
 
 Future<void> main() async {
-  // Ensure Flutter bindings are initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   try {

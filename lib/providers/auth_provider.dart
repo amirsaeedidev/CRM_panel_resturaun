@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Added for User type
 import '../core/services/supabase_service.dart';
 import '../core/services/logger_service.dart';
 import '../core/services/storage_service.dart';
-import '../models/user_model.dart';
-// import '../repositories/auth_repository.dart'; // Will be used later in feature development
+// import '../models/user_model.dart'; // Removed temporarily
 
 class AuthProvider extends ChangeNotifier {
   // final AuthRepository _authRepository;
   
-  User? _currentUser;
+  User? _currentUser; // Using Supabase User type directly
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -25,8 +25,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final session = SupabaseService.auth.currentSession;
       if (session != null) {
-        // TODO: Map session user to User model when UserModel is ready
-        // _currentUser = User.fromJson(session.user.userMetadata ?? {});
+        _currentUser = session.user;
       }
     } catch (e) {
       LoggerService.error('Auth init failed', error: e);
@@ -45,7 +44,7 @@ class AuthProvider extends ChangeNotifier {
       );
       
       if (response.user != null) {
-        // _currentUser = User.fromJson(response.user!.userMetadata ?? {});
+        _currentUser = response.user;
         await StorageService.setString('user_id', response.user!.id);
         LoggerService.info('User logged in successfully');
       }
