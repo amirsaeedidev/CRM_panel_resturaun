@@ -140,7 +140,7 @@ class OrderDetailsScreen extends StatelessWidget {
                             SizedBox(
                               width: 100,
                               child: Text(
-                                '${item['price']} ت',
+                                '${item['price']} تومان',
                                 textAlign: TextAlign.end,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: AppColors.getPrimaryText(context),
