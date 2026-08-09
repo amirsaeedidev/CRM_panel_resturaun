@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_radius.dart';
+import '../../providers/theme_provider.dart';
 
 class AppTopbar extends StatelessWidget {
   final String title;
@@ -46,7 +48,7 @@ class AppTopbar extends StatelessWidget {
           
           const Spacer(),
           
-          // Search Field (Responsive: hidden on very small screens)
+          // Search Field (Responsive)
           Expanded(
             flex: 2,
             child: TextField(
@@ -71,10 +73,22 @@ class AppTopbar extends StatelessWidget {
             icon: Icon(Icons.notifications_none, color: AppColors.getPrimaryText(context)),
             onPressed: () {},
           ),
-          IconButton(
-            icon: Icon(Icons.dark_mode_outlined, color: AppColors.getPrimaryText(context)),
-            onPressed: () {},
+          
+          // Dark Mode Toggle Button
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, child) {
+              return IconButton(
+                icon: Icon(
+                  themeProvider.isDarkMode ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  color: AppColors.getPrimaryText(context),
+                ),
+                onPressed: () {
+                  themeProvider.toggleTheme();
+                },
+              );
+            },
           ),
+          
           const SizedBox(width: AppSizes.sm),
           const CircleAvatar(
             backgroundColor: AppColors.primary,

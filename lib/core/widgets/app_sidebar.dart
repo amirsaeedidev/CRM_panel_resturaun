@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_sizes.dart';
 import '../constants/app_strings.dart';
+import '../constants/app_routes.dart';
 import '../theme/app_typography.dart';
-import '../theme/app_radius.dart';
 import 'navigation_item.dart';
 import '../../providers/navigation_provider.dart';
 
@@ -53,43 +54,64 @@ class AppSidebar extends StatelessWidget {
                   icon: Icons.home_outlined,
                   label: AppStrings.dashboard,
                   isActive: navProvider.selectedIndex == 0,
-                  onTap: () => navProvider.updateIndex(0),
+                  onTap: () {
+                    navProvider.updateIndex(0);
+                    context.go(AppRoutes.dashboard);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.shopping_bag_outlined,
                   label: AppStrings.orders,
                   isActive: navProvider.selectedIndex == 1,
-                  onTap: () => navProvider.updateIndex(1),
+                  onTap: () {
+                    navProvider.updateIndex(1);
+                    context.go(AppRoutes.orders);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.inventory_2_outlined,
                   label: AppStrings.products,
                   isActive: navProvider.selectedIndex == 2,
-                  onTap: () => navProvider.updateIndex(2),
+                  onTap: () {
+                    navProvider.updateIndex(2);
+                    context.go(AppRoutes.products);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.people_outline,
                   label: AppStrings.customers,
                   isActive: navProvider.selectedIndex == 3,
-                  onTap: () => navProvider.updateIndex(3),
+                  onTap: () {
+                    navProvider.updateIndex(3);
+                    context.go(AppRoutes.customers);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.category_outlined,
                   label: AppStrings.categories,
                   isActive: navProvider.selectedIndex == 4,
-                  onTap: () => navProvider.updateIndex(4),
+                  onTap: () {
+                    navProvider.updateIndex(4);
+                    context.go(AppRoutes.categories);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.bar_chart,
                   label: AppStrings.reports,
                   isActive: navProvider.selectedIndex == 5,
-                  onTap: () => navProvider.updateIndex(5),
+                  onTap: () {
+                    navProvider.updateIndex(5);
+                    context.go(AppRoutes.reports);
+                  },
                 ),
                 NavigationItem(
                   icon: Icons.settings_outlined,
                   label: AppStrings.settings,
                   isActive: navProvider.selectedIndex == 6,
-                  onTap: () => navProvider.updateIndex(6),
+                  onTap: () {
+                    navProvider.updateIndex(6);
+                    context.go(AppRoutes.settings);
+                  },
                 ),
               ],
             ),

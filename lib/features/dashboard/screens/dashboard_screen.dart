@@ -74,15 +74,31 @@ class DashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSizes.lg),
 
-              // Charts Section
-              Flex(
-                direction: isMobile ? Axis.vertical : Axis.horizontal,
-                children: [
-                  Expanded(flex: isMobile ? 1 : 2, child: const SalesChart()),
-                  SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
-                  Expanded(flex: isMobile ? 1 : 1, child: const CategoryPieChart()),
-                ],
-              ),
+              // Charts Section (Fixed for Mobile ScrollView)
+              if (isMobile)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    SizedBox(
+                      width: double.infinity, // Take full width
+                      child: SalesChart(),
+                    ),
+                    SizedBox(height: AppSizes.md),
+                    SizedBox(
+                      width: double.infinity,
+                      child: CategoryPieChart(),
+                    ),
+                  ],
+                )
+              else
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Expanded(flex: 2, child: SalesChart()),
+                    SizedBox(width: AppSizes.md),
+                    Expanded(flex: 1, child: CategoryPieChart()),
+                  ],
+                ),
               const SizedBox(height: AppSizes.lg),
 
               // Recent Orders List

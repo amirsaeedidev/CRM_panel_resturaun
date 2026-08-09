@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
-import '../../../core/constants/app_strings.dart';
-import '../../../core/theme/app_typography.dart';
+import '../../../core/constants/app_routes.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/custom_chip.dart';
 
@@ -29,85 +29,116 @@ class RecentOrdersList extends StatelessWidget {
             children: [
               Text(
                 'آخرین سفارشات',
-                style: AppTypography.titleLarge.copyWith(
-                  color: AppColors.getPrimaryText(context),
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: AppColors.getPrimaryText(context),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to Orders List Screen
+                  context.go(AppRoutes.orders);
+                },
                 child: Text(
                   'مشاهده همه',
-                  style: AppTypography.bodyMedium.copyWith(color: AppColors.primary),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.primary),
                 ),
               ),
             ],
           ),
           const SizedBox(height: AppSizes.md),
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _orders.length,
-            separatorBuilder: (context, index) => Divider(
-              height: 1,
-              color: AppColors.getBorder(context).withOpacity(0.5),
-            ),
-            itemBuilder: (context, index) {
-              final order = _orders[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: AppColors.getBackground(context),
-                      child: Text(
-                        order['customer'][0],
-                        style: AppTypography.titleMedium.copyWith(color: AppColors.primary),
-                      ),
-                    ),
-                    const SizedBox(width: AppSizes.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          
+          // Fixed height Stack to allow the fade effect at the bottom
+          SizedBox(
+            height: 300, // Adjust height as needed
+            child: Stack(
+              children: [
+                ListView.separated(
+                  itemCount: _orders.length,
+                  separatorBuilder: (context, index) => Divider(
+                    height: 1,
+                    color: AppColors.getBorder(context).withOpacity(0.5),
+                  ),
+                  itemBuilder: (context, index) {
+                    final order = _orders[index];
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
+                      child: Row(
                         children: [
-                          Text(
-                            order['customer'],
-                            style: AppTypography.titleMedium.copyWith(
-                              color: AppColors.getPrimaryText(context),
-                              fontWeight: FontWeight.bold,
+                          CircleAvatar(
+                            backgroundColor: AppColors.getBackground(context),
+                            child: Text(
+                              order['customer'][0],
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.primary),
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'سفارش ${order['id']}',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.getSecondaryText(context),
+                          const SizedBox(width: AppSizes.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  order['customer'],
+                                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                        color: AppColors.getPrimaryText(context),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'سفارش ${order['id']}',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.getSecondaryText(context),
+                                      ),
+                                ),
+                              ],
                             ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                order['amount'],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.getPrimaryText(context),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const SizedBox(height: 4),
+                              CustomChip(
+                                label: order['status'],
+                                type: order['chipType'],
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          order['amount'],
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.getPrimaryText(context),
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        CustomChip(
-                          label: order['status'],
-                          type: order['chipType'],
-                        ),
-                      ],
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
+                
+                // Bottom Blur/Fade Effect
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 40, // Height of the fade effect
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.getSurface(context).withOpacity(0),
+                          AppColors.getSurface(context),
+                        ],
+                        stops: const [0.0, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
