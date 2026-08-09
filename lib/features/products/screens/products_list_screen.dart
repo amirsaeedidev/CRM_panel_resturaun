@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/widgets/app_card.dart';
@@ -68,7 +69,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                 icon: Icons.add_rounded,
                 width: 200,
                 onPressed: () {
-                  // TODO: Navigate to Add Product screen
+                  context.push('/products/add');
                 },
               ),
             ],
@@ -115,13 +116,13 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                               IconButton(
                                 icon: const Icon(Icons.visibility_outlined, color: AppColors.info),
                                 onPressed: () {
-                                  // TODO: Navigate to Details screen
+                                  context.push('/products/details/${prod['id']}');
                                 },
                               ),
                               IconButton(
                                 icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
                                 onPressed: () {
-                                  // TODO: Navigate to Edit screen
+                                  context.push('/products/edit/${prod['id']}');
                                 },
                               ),
                               IconButton(
@@ -132,7 +133,9 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                                     title: 'حذف محصول',
                                     message: 'آیا از حذف محصول "${prod['name']}" مطمئن هستید؟',
                                     onDelete: () {
-                                      // TODO: Implement delete logic
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('محصول حذف شد (شبیه‌سازی)'), backgroundColor: AppColors.success),
+                                      );
                                     },
                                   );
                                 },
