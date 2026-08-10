@@ -7,7 +7,10 @@ class ProductModel {
   final String categoryId;
   final int stock;
   final String imageUrl;
-  final String status; // e.g., 'active', 'inactive', 'out_of_stock'
+  final String status; // 'active', 'inactive', 'out_of_stock'
+  final bool isPopular;
+  final double? rating;
+  final int? reviewCount;
   final DateTime createdAt;
 
   ProductModel({
@@ -20,6 +23,9 @@ class ProductModel {
     required this.stock,
     required this.imageUrl,
     required this.status,
+    this.isPopular = false,
+    this.rating,
+    this.reviewCount,
     required this.createdAt,
   });
 
@@ -36,6 +42,9 @@ class ProductModel {
       stock: json['stock'] as int? ?? 0,
       imageUrl: json['image_url'] as String? ?? '',
       status: json['status'] as String? ?? 'active',
+      isPopular: json['is_popular'] as bool? ?? false,
+      rating: json['rating'] != null ? (json['rating'] as num).toDouble() : null,
+      reviewCount: json['review_count'] as int?,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
@@ -51,6 +60,9 @@ class ProductModel {
       'stock': stock,
       'image_url': imageUrl,
       'status': status,
+      'is_popular': isPopular,
+      'rating': rating,
+      'review_count': reviewCount,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -65,6 +77,9 @@ class ProductModel {
     int? stock,
     String? imageUrl,
     String? status,
+    bool? isPopular,
+    double? rating,
+    int? reviewCount,
     DateTime? createdAt,
   }) {
     return ProductModel(
@@ -77,6 +92,9 @@ class ProductModel {
       stock: stock ?? this.stock,
       imageUrl: imageUrl ?? this.imageUrl,
       status: status ?? this.status,
+      isPopular: isPopular ?? this.isPopular,
+      rating: rating ?? this.rating,
+      reviewCount: reviewCount ?? this.reviewCount,
       createdAt: createdAt ?? this.createdAt,
     );
   }
