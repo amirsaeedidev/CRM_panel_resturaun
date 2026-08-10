@@ -15,7 +15,7 @@ import '../../../providers/categories_provider.dart';
 class CategoryFormScreen extends StatefulWidget {
   final String? categoryId;
 
-  const CategoryFormScreen({super.key, this.productId});
+  const CategoryFormScreen({super.key, this.categoryId}); // Fixed here
 
   @override
   State<CategoryFormScreen> createState() => _CategoryFormScreenState();
