@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/widgets/app_card.dart';
+import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/app_search.dart';
 import '../../../core/widgets/app_table.dart';
 import '../../../core/widgets/custom_chip.dart';
+import '../../../models/order_model.dart';
+import '../../../providers/orders_provider.dart';
+import '../../../shared/widgets/empty_widget.dart';
+import '../../../shared/widgets/error_widget.dart' as app_error;
 import '../../../shared/widgets/pagination_widget.dart';
 
 class OrdersListScreen extends StatefulWidget {
@@ -16,32 +25,49 @@ class OrdersListScreen extends StatefulWidget {
 
 class _OrdersListScreenState extends State<OrdersListScreen> {
   final TextEditingController _searchController = TextEditingController();
-  int _currentPage = 1;
-  final int _totalPages = 12;
+  final NumberFormat _currencyFormatter = NumberFormat.decimalPattern('en_US');
+  final DateFormat _dateFormatter = DateFormat('yyyy-MM-dd – HH:mm');
 
-  // Mock Data
-  final List<Map<String, dynamic>> _orders = [
-    {'id': '#10234', 'customer': 'علی رضایی', 'date': '1403/08/12', 'amount': '1,500,000', 'status': 'در حال پردازش'},
-    {'id': '#10233', 'customer': 'سارا محمدی', 'date': '1403/08/12', 'amount': '850,000', 'status': 'تحویل شده'},
-    {'id': '#10232', 'customer': 'حسین کریمی', 'date': '1403/08/11', 'amount': '2,300,000', 'status': 'لغو شده'},
-    {'id': '#10231', 'customer': 'مریم احمدی', 'date': '1403/08/11', 'amount': '500,000', 'status': 'ارسال شده'},
-    {'id': '#10230', 'customer': 'رضا قاسمی', 'date': '1403/08/10', 'amount': '3,100,000', 'status': 'تحویل شده'},
-  ];
-
-  ChipType _getStatusChipType(String status) {
-    switch (status) {
-      case 'در حال پردازش': return ChipType.warning;
-      case 'ارسال شده': return ChipType.info;
-      case 'تحویل شده': return ChipType.success;
-      case 'لغو شده': return ChipType.error;
-      default: return ChipType.neutral;
-    }
+  @override
+  void initState() {
+    super.initState();
+    // Fetch initial data
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrdersProvider>().fetchOrders();
+    });
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  ChipType _getStatusChipType(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return ChipType.warning;
+      case 'confirmed':
+      case 'preparing':
+        return ChipType.info;
+      case 'shipped':
+      case 'out_for_delivery':
+        return ChipType.primary;
+      case 'delivered':
+        return ChipType.success;
+      case 'cancelled':
+        return ChipType.error;
+      default:
+        return ChipType.neutral;
+    }
+  }
+
+  String _formatStatus(String status) {
+    if (status.isEmpty) return 'Unknown';
+    return status.split('_').map((word) {
+      if (word.isEmpty) return word;
+      return word[0].toUpperCase() + word.substring(1).toLowerCase();
+    }).join(' ');
   }
 
   @override
@@ -53,7 +79,7 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
         children: [
           // Header
           Text(
-            'مدیریت سفارشات',
+            'Orders Management',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: AppColors.getPrimaryText(context),
                   fontWeight: FontWeight.bold,
@@ -65,75 +91,148 @@ class _OrdersListScreenState extends State<OrdersListScreen> {
           AppSearch(
             controller: _searchController,
             onChanged: (value) {
-              // TODO: Implement search logic
+              context.read<OrdersProvider>().setSearchQuery(value);
             },
           ),
           const SizedBox(height: AppSizes.lg),
 
-          // Table Area
+          // Content Area based on State
           Expanded(
-            child: AppCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: AppTable(
-                      minWidth: 800,
-                      headers: const ['شماره سفارش', 'مشتری', 'تاریخ', 'مبلغ (تومان)', 'وضعیت', 'عملیات'],
-                      rows: _orders.map((order) {
-                        return [
-                          Text(
-                            order['id'],
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          Text(order['customer'], style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.getPrimaryText(context), fontWeight: FontWeight.bold)),
-                          Text(order['date'], style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.getSecondaryText(context))),
-                          Text(order['amount'], style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.getPrimaryText(context))),
-                          CustomChip(
-                            label: order['status'],
-                            type: _getStatusChipType(order['status']),
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.visibility_outlined, color: AppColors.info),
-                                onPressed: () {
-                                  // TODO: Navigate to Details screen
-                                },
+            child: Consumer<OrdersProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading && provider.orders.isEmpty) {
+                  return const Center(child: AppLoading());
+                }
+
+                if (provider.error != null && provider.orders.isEmpty) {
+                  return app_error.AppErrorWidget(
+                    message: provider.error!,
+                    onRetry: () => provider.fetchOrders(),
+                  );
+                }
+
+                if (provider.orders.isEmpty) {
+                  return const EmptyWidget(
+                    title: 'No Orders Found',
+                    message: 'There are no orders matching your criteria.',
+                    icon: Icons.receipt_long_outlined,
+                  );
+                }
+
+                return AppCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: AppTable(
+                          minWidth: 900,
+                          headers: const [
+                            'Order ID',
+                            'Customer',
+                            'Date',
+                            'Amount',
+                            'Status',
+                            'Actions'
+                          ],
+                          rows: provider.orders.map((order) {
+                            return [
+                              Text(
+                                '#${order.id.substring(0, 8).toUpperCase()}',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.edit_outlined, color: AppColors.primary),
-                                onPressed: () {
-                                  // TODO: Open status change dialog
-                                },
+                              Text(
+                                order.customerName,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.getPrimaryText(context),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
-                            ],
+                              Text(
+                                _dateFormatter.format(order.createdAt.toLocal()),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.getSecondaryText(context),
+                                    ),
+                              ),
+                              Text(
+                                '${_currencyFormatter.format(order.totalAmount)} T',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: AppColors.getPrimaryText(context),
+                                    ),
+                              ),
+                              CustomChip(
+                                label: _formatStatus(order.status),
+                                type: _getStatusChipType(order.status),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.visibility_outlined, color: AppColors.info),
+                                    onPressed: () {
+                                      context.push('/orders/details/${order.id}');
+                                    },
+                                  ),
+                                  _buildStatusChangeMenu(context, order),
+                                ],
+                              ),
+                            ];
+                          }).toList(),
+                        ),
+                      ),
+                      if (provider.totalPages > 1)
+                        Padding(
+                          padding: const EdgeInsets.all(AppSizes.md),
+                          child: PaginationWidget(
+                            currentPage: provider.currentPage,
+                            totalPages: provider.totalPages,
+                            onPageChanged: (page) {
+                              provider.changePage(page);
+                            },
                           ),
-                        ];
-                      }).toList(),
-                    ),
+                        ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(AppSizes.md),
-                    child: PaginationWidget(
-                      currentPage: _currentPage,
-                      totalPages: _totalPages,
-                      onPageChanged: (page) {
-                        setState(() {
-                          _currentPage = page;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatusChangeMenu(BuildContext context, OrderModel order) {
+    return PopupMenuButton<String>(
+      icon: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary),
+      tooltip: 'Change Status',
+      onSelected: (String newStatus) {
+        context.read<OrdersProvider>().updateOrderStatus(order.id, newStatus);
+      },
+      itemBuilder: (context) {
+        final statuses = [
+          'pending',
+          'confirmed',
+          'preparing',
+          'out_for_delivery',
+          'delivered',
+          'cancelled'
+        ];
+        return statuses.map((status) {
+          return PopupMenuItem<String>(
+            value: status,
+            enabled: status != order.status.toLowerCase(),
+            child: Row(
+              children: [
+                Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: AppSizes.sm),
+                Text(_formatStatus(status)),
+              ],
+            ),
+          );
+        }).toList();
+      },
     );
   }
 }
