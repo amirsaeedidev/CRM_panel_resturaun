@@ -27,115 +27,41 @@ class AppRouter {
         initialLocation: AppRoutes.dashboard,
         navigatorKey: _rootNavigatorKey,
         routes: [
-          // Routes inside the Main Layout (Sidebar + Topbar)
           ShellRoute(
             builder: (context, state, child) => MainLayout(child: child),
             routes: [
-              GoRoute(
-                path: AppRoutes.dashboard,
-                name: AppRoutes.dashboard,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: DashboardScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.orders,
-                name: AppRoutes.orders,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: OrdersListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.products,
-                name: AppRoutes.products,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: ProductsListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.customers,
-                name: AppRoutes.customers,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: CustomersListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.categories,
-                name: AppRoutes.categories,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: CategoriesListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: '/banners',
-                name: 'banners',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: BannersListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: '/discounts',
-                name: 'discounts',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: DiscountsListScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.reports,
-                name: AppRoutes.reports,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: ReportsScreen(),
-                ),
-              ),
-              GoRoute(
-                path: AppRoutes.settings, // Updated Settings Route
-                name: AppRoutes.settings,
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: SettingsScreen(),
-                ),
-              ),
+              GoRoute(path: AppRoutes.dashboard, name: AppRoutes.dashboard, pageBuilder: (context, state) => const NoTransitionPage(child: DashboardScreen())),
+              GoRoute(path: AppRoutes.orders, name: AppRoutes.orders, pageBuilder: (context, state) => const NoTransitionPage(child: OrdersListScreen())),
+              GoRoute(path: AppRoutes.products, name: AppRoutes.products, pageBuilder: (context, state) => const NoTransitionPage(child: ProductsListScreen())),
+              GoRoute(path: AppRoutes.customers, name: AppRoutes.customers, pageBuilder: (context, state) => const NoTransitionPage(child: CustomersListScreen())),
+              GoRoute(path: AppRoutes.categories, name: AppRoutes.categories, pageBuilder: (context, state) => const NoTransitionPage(child: CategoriesListScreen())),
+              GoRoute(path: '/banners', name: 'banners', pageBuilder: (context, state) => const NoTransitionPage(child: BannersListScreen())),
+              GoRoute(path: '/discounts', name: 'discounts', pageBuilder: (context, state) => const NoTransitionPage(child: DiscountsListScreen())),
+              GoRoute(path: AppRoutes.reports, name: AppRoutes.reports, pageBuilder: (context, state) => const NoTransitionPage(child: ReportsScreen())),
+              GoRoute(path: AppRoutes.settings, name: AppRoutes.settings, pageBuilder: (context, state) => const NoTransitionPage(child: SettingsScreen())),
             ],
           ),
           
-          // --- Category Full Screen Routes ---
-          GoRoute(
-            path: '/categories/add',
-            name: 'category_add',
-            parentNavigatorKey: _rootNavigatorKey,
-            pageBuilder: (context, state) => const MaterialPage(
-              child: CategoryFormScreen(),
-            ),
-          ),
+          // Full Screen Routes
+          GoRoute(path: '/categories/add', name: 'category_add', parentNavigatorKey: _rootNavigatorKey, pageBuilder: (context, state) => const MaterialPage(child: CategoryFormScreen())),
           GoRoute(
             path: '/categories/edit/:id',
             name: 'category_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              final categoryId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: CategoryFormScreen(categoryId: categoryId),
-              );
+              final categoryId = state.pathParameters['id']!; 
+              return MaterialPage(child: CategoryFormScreen(categoryId: categoryId));
             },
           ),
 
-          // --- Product Full Screen Routes ---
-          GoRoute(
-            path: '/products/add',
-            name: 'product_add',
-            parentNavigatorKey: _rootNavigatorKey,
-            pageBuilder: (context, state) => const MaterialPage(
-              child: ProductFormScreen(),
-            ),
-          ),
+          GoRoute(path: '/products/add', name: 'product_add', parentNavigatorKey: _rootNavigatorKey, pageBuilder: (context, state) => const MaterialPage(child: ProductFormScreen())),
           GoRoute(
             path: '/products/edit/:id',
             name: 'product_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              final productId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: ProductFormScreen(productId: productId),
-              );
+              final productId = state.pathParameters['id']!;
+              return MaterialPage(child: ProductFormScreen(productId: productId));
             },
           ),
           GoRoute(
@@ -143,85 +69,55 @@ class AppRouter {
             name: 'product_details',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
+              // Using int.parse because ProductDetailsScreen expects an int
               final productId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: ProductDetailsScreen(productId: productId),
-              );
+              return MaterialPage(child: ProductDetailsScreen(productId: productId));
             },
           ),
 
-          // --- Banner Full Screen Routes ---
-          GoRoute(
-            path: '/banners/add',
-            name: 'banner_add',
-            parentNavigatorKey: _rootNavigatorKey,
-            pageBuilder: (context, state) => const MaterialPage(
-              child: BannerFormScreen(),
-            ),
-          ),
+          GoRoute(path: '/banners/add', name: 'banner_add', parentNavigatorKey: _rootNavigatorKey, pageBuilder: (context, state) => const MaterialPage(child: BannerFormScreen())),
           GoRoute(
             path: '/banners/edit/:id',
             name: 'banner_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              final bannerId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: BannerFormScreen(bannerId: bannerId),
-              );
+              final bannerId = state.pathParameters['id']!;
+              return MaterialPage(child: BannerFormScreen(bannerId: bannerId));
             },
           ),
 
-          // --- Discount Full Screen Routes ---
-          GoRoute(
-            path: '/discounts/add',
-            name: 'discount_add',
-            parentNavigatorKey: _rootNavigatorKey,
-            pageBuilder: (context, state) => const MaterialPage(
-              child: DiscountFormScreen(),
-            ),
-          ),
+          GoRoute(path: '/discounts/add', name: 'discount_add', parentNavigatorKey: _rootNavigatorKey, pageBuilder: (context, state) => const MaterialPage(child: DiscountFormScreen())),
           GoRoute(
             path: '/discounts/edit/:id',
             name: 'discount_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
+              // Using int.parse because DiscountFormScreen expects an int
               final discountId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: DiscountFormScreen(discountId: discountId),
-              );
+              return MaterialPage(child: DiscountFormScreen(discountId: discountId));
             },
           ),
 
-          // --- Customer Full Screen Routes ---
           GoRoute(
             path: '/customers/details/:id',
             name: 'customer_details',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
+              // Using int.parse because CustomerDetailsScreen expects an int
               final customerId = int.parse(state.pathParameters['id']!);
-              return MaterialPage(
-                child: CustomerDetailsScreen(customerId: customerId),
-              );
+              return MaterialPage(child: CustomerDetailsScreen(customerId: customerId));
             },
           ),
-
-          // --- Order Full Screen Routes ---
           GoRoute(
             path: '/orders/details/:id',
             name: 'order_details',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
               final orderId = state.pathParameters['id']!;
-              return MaterialPage(
-                child: OrderDetailsScreen(orderId: orderId),
-              );
+              return MaterialPage(child: OrderDetailsScreen(orderId: orderId));
             },
           ),
         ],
-        errorBuilder: (context, state) => Scaffold(
-          body: Center(
-            child: Text('Page not found (404)'),
-          ),
-        ),
+        errorBuilder: (context, state) => Scaffold(body: Center(child: Text('Page not found (404)'))),
       );
 }

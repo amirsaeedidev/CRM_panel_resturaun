@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import '../core/services/logger_service.dart';
-import '../models/banner_model.dart';
-import '../repositories/banners_repository.dart';
+import '../models/discount_model.dart';
+import '../repositories/discounts_repository.dart';
 
-class BannersProvider extends ChangeNotifier {
-  final BannersRepository _repository;
-  BannersProvider(this._repository);
+class DiscountsProvider extends ChangeNotifier {
+  final DiscountsRepository _repository;
+  DiscountsProvider(this._repository);
 
   bool _isLoading = false;
   bool _isSaving = false;
   String? _error;
-  List<BannerModel> _banners = [];
+  List<DiscountModel> _discounts = [];
   int _currentPage = 1;
   int _totalPages = 1;
   String _searchQuery = '';
@@ -19,25 +19,25 @@ class BannersProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get error => _error;
-  List<BannerModel> get banners => _banners;
+  List<DiscountModel> get discounts => _discounts;
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
   String get searchQuery => _searchQuery;
 
-  Future<void> fetchBanners() async {
+  Future<void> fetchDiscounts() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _banners = await _repository.getBanners(
+      _discounts = await _repository.getDiscounts(
         page: _currentPage,
         pageSize: _pageSize,
         searchQuery: _searchQuery.isEmpty ? null : _searchQuery,
       );
-      _totalPages = _banners.length == _pageSize ? _currentPage + 1 : _currentPage;
+      _totalPages = _discounts.length == _pageSize ? _currentPage + 1 : _currentPage;
     } catch (e, st) {
-      LoggerService.error('Fetch banners failed', error: e, stackTrace: st);
+      LoggerService.error('Fetch discounts failed', error: e, stackTrace: st);
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -48,35 +48,35 @@ class BannersProvider extends ChangeNotifier {
   Future<void> setSearchQuery(String query) async {
     _searchQuery = query;
     _currentPage = 1;
-    await fetchBanners();
+    await fetchDiscounts();
   }
 
   Future<void> changePage(int page) async {
     if (page < 1 || page > _totalPages) return;
     _currentPage = page;
-    await fetchBanners();
+    await fetchDiscounts();
   }
 
-  BannerModel? getBannerById(String id) {
+  DiscountModel? getDiscountById(String id) {
     try {
-      return _banners.firstWhere((b) => b.id == id);
+      return _discounts.firstWhere((d) => d.id == id);
     } catch (e) {
       return null;
     }
   }
 
-  Future<bool> createBanner(Map<String, dynamic> data) async {
+  Future<bool> createDiscount(Map<String, dynamic> data) async {
     _isSaving = true;
     _error = null;
     notifyListeners();
 
     try {
-      final newBanner = await _repository.createBanner(data);
-      _banners.insert(0, newBanner);
+      final newDiscount = await _repository.createDiscount(data);
+      _discounts.insert(0, newDiscount);
       notifyListeners();
       return true;
     } catch (e, st) {
-      LoggerService.error('Create banner failed', error: e, stackTrace: st);
+      LoggerService.error('Create discount failed', error: e, stackTrace: st);
       _error = e.toString();
       return false;
     } finally {
@@ -85,21 +85,21 @@ class BannersProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updateBanner(String id, Map<String, dynamic> data) async {
+  Future<bool> updateDiscount(String id, Map<String, dynamic> data) async {
     _isSaving = true;
     _error = null;
     notifyListeners();
 
     try {
-      final updatedBanner = await _repository.updateBanner(id, data);
-      final index = _banners.indexWhere((b) => b.id == id);
+      final updatedDiscount = await _repository.updateDiscount(id, data);
+      final index = _discounts.indexWhere((d) => d.id == id);
       if (index != -1) {
-        _banners[index] = updatedBanner;
+        _discounts[index] = updatedDiscount;
       }
       notifyListeners();
       return true;
     } catch (e, st) {
-      LoggerService.error('Update banner failed', error: e, stackTrace: st);
+      LoggerService.error('Update discount failed', error: e, stackTrace: st);
       _error = e.toString();
       return false;
     } finally {
@@ -108,30 +108,30 @@ class BannersProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> deleteBanner(String id) async {
+  Future<bool> deleteDiscount(String id) async {
     try {
-      await _repository.deleteBanner(id);
-      _banners.removeWhere((b) => b.id == id);
+      await _repository.deleteDiscount(id);
+      _discounts.removeWhere((d) => d.id == id);
       notifyListeners();
       return true;
     } catch (e, st) {
-      LoggerService.error('Delete banner failed', error: e, stackTrace: st);
+      LoggerService.error('Delete discount failed', error: e, stackTrace: st);
       _error = e.toString();
       return false;
     }
   }
 
-  Future<bool> toggleBannerStatus(String id, bool isActive) async {
+  Future<bool> toggleDiscountStatus(String id, bool isActive) async {
     try {
-      await _repository.updateBanner(id, {'is_active': isActive});
-      final index = _banners.indexWhere((b) => b.id == id);
+      await _repository.updateDiscount(id, {'is_active': isActive});
+      final index = _discounts.indexWhere((d) => d.id == id);
       if (index != -1) {
-        _banners[index] = _banners[index].copyWith(isActive: isActive);
+        _discounts[index] = _discounts[index].copyWith(isActive: isActive);
         notifyListeners();
       }
       return true;
     } catch (e, st) {
-      LoggerService.error('Toggle banner status failed', error: e, stackTrace: st);
+      LoggerService.error('Toggle discount status failed', error: e, stackTrace: st);
       _error = e.toString();
       return false;
     }

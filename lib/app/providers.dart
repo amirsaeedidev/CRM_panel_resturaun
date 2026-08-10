@@ -1,13 +1,50 @@
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
+
 import '../providers/theme_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/products_provider.dart';
+import '../providers/categories_provider.dart';
+import '../providers/orders_provider.dart';
+import '../providers/banners_provider.dart';
+import '../providers/discounts_provider.dart';
+
+import '../repositories/products_repository.dart';
+import '../repositories/categories_repository.dart';
+import '../repositories/orders_repository.dart';
+import '../repositories/banners_repository.dart';
+import '../repositories/discounts_repository.dart';
 
 class AppProviders {
   static List<SingleChildWidget> get providers => [
+    // Core Providers
     ChangeNotifierProvider(create: (_) => ThemeProvider()),
     ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
     ChangeNotifierProvider(create: (_) => NavigationProvider()),
+
+    // Repositories
+    Provider<ProductsRepository>(create: (_) => ProductsRepository()),
+    Provider<CategoriesRepository>(create: (_) => CategoriesRepository()),
+    Provider<OrdersRepository>(create: (_) => OrdersRepository()),
+    Provider<BannersRepository>(create: (_) => BannersRepository()),
+    Provider<DiscountsRepository>(create: (_) => DiscountsRepository()),
+
+    // Feature Providers
+    ChangeNotifierProvider<ProductsProvider>(
+      create: (context) => ProductsProvider(context.read<ProductsRepository>()),
+    ),
+    ChangeNotifierProvider<CategoriesProvider>(
+      create: (context) => CategoriesProvider(context.read<CategoriesRepository>()),
+    ),
+    ChangeNotifierProvider<OrdersProvider>(
+      create: (context) => OrdersProvider(context.read<OrdersRepository>()),
+    ),
+    ChangeNotifierProvider<BannersProvider>(
+      create: (context) => BannersProvider(context.read<BannersRepository>()),
+    ),
+    ChangeNotifierProvider<DiscountsProvider>(
+      create: (context) => DiscountsProvider(context.read<DiscountsRepository>()),
+    ),
   ];
 }
