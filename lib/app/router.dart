@@ -18,6 +18,9 @@ import '../features/orders/screens/orders_list_screen.dart';
 import '../features/orders/screens/order_details_screen.dart';
 import '../features/reports/screens/reports_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
+import '../features/reservations/screens/reservations_list_screen.dart';
+
+// import '../features/tables/screens/tables_grid_screen.dart'; // Uncomment when created
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -37,6 +40,8 @@ class AppRouter {
               GoRoute(path: AppRoutes.categories, name: AppRoutes.categories, pageBuilder: (context, state) => const NoTransitionPage(child: CategoriesListScreen())),
               GoRoute(path: '/banners', name: 'banners', pageBuilder: (context, state) => const NoTransitionPage(child: BannersListScreen())),
               GoRoute(path: '/discounts', name: 'discounts', pageBuilder: (context, state) => const NoTransitionPage(child: DiscountsListScreen())),
+              GoRoute(path: AppRoutes.reservations, name: AppRoutes.reservations, pageBuilder: (context, state) => const NoTransitionPage(child: ReservationsListScreen())),
+              // GoRoute(path: AppRoutes.tables, name: AppRoutes.tables, pageBuilder: (context, state) => const NoTransitionPage(child: TablesGridScreen())), // Uncomment when created
               GoRoute(path: AppRoutes.reports, name: AppRoutes.reports, pageBuilder: (context, state) => const NoTransitionPage(child: ReportsScreen())),
               GoRoute(path: AppRoutes.settings, name: AppRoutes.settings, pageBuilder: (context, state) => const NoTransitionPage(child: SettingsScreen())),
             ],
@@ -69,7 +74,6 @@ class AppRouter {
             name: 'product_details',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              // Using int.parse because ProductDetailsScreen expects an int
               final productId = int.parse(state.pathParameters['id']!);
               return MaterialPage(child: ProductDetailsScreen(productId: productId));
             },
@@ -92,7 +96,6 @@ class AppRouter {
             name: 'discount_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              // Using int.parse because DiscountFormScreen expects an int
               final discountId = int.parse(state.pathParameters['id']!);
               return MaterialPage(child: DiscountFormScreen(discountId: discountId));
             },
@@ -103,7 +106,6 @@ class AppRouter {
             name: 'customer_details',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              // Using int.parse because CustomerDetailsScreen expects an int
               final customerId = int.parse(state.pathParameters['id']!);
               return MaterialPage(child: CustomerDetailsScreen(customerId: customerId));
             },

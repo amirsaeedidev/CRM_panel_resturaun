@@ -10,5 +10,7 @@ class AppRoutes {
   static const String categories = '/categories';
   static const String reports = '/reports';
   static const String settings = '/settings';
+  static const String reservations = '/reservations';
+  static const String tables = '/tables';
   static const String notFound = '/404';
 }
