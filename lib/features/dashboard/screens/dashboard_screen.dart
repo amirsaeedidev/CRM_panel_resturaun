@@ -5,6 +5,7 @@ import '../widgets/statistic_card.dart';
 import '../widgets/sales_chart.dart';
 import '../widgets/category_pie_chart.dart';
 import '../widgets/recent_orders_list.dart';
+import '../widgets/customer_activity_feed.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -23,7 +24,7 @@ class DashboardScreen extends StatelessWidget {
             children: [
               // Page Greeting
               Text(
-                'سلام، خوش آمدی! 👋',
+                'Welcome back!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: AppColors.getPrimaryText(context),
                       fontWeight: FontWeight.bold,
@@ -31,7 +32,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSizes.sm),
               Text(
-                'اینجا خلاصه وضعیت فروشگاه شما در ۳۰ روز گذشته است.',
+                'Here is a summary of your store performance over the last 30 days.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.getSecondaryText(context),
                     ),
@@ -46,8 +47,8 @@ class DashboardScreen extends StatelessWidget {
                   _buildStatCard(
                     context: context,
                     width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
-                    title: 'فروش کل',
-                    value: '45,200,000 تومان',
+                    title: 'Total Sales',
+                    value: '45,200,000 T',
                     icon: Icons.attach_money,
                     iconColor: AppColors.success,
                     changePercentage: '12',
@@ -55,7 +56,7 @@ class DashboardScreen extends StatelessWidget {
                   _buildStatCard(
                     context: context,
                     width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
-                    title: 'سفارشات جدید',
+                    title: 'New Orders',
                     value: '124',
                     icon: Icons.shopping_cart_checkout,
                     iconColor: AppColors.primary,
@@ -64,7 +65,7 @@ class DashboardScreen extends StatelessWidget {
                   _buildStatCard(
                     context: context,
                     width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
-                    title: 'کاربران فعال',
+                    title: 'Active Users',
                     value: '3,450',
                     icon: Icons.people_alt_outlined,
                     iconColor: AppColors.accent,
@@ -103,6 +104,13 @@ class DashboardScreen extends StatelessWidget {
 
               // Recent Orders List
               const RecentOrdersList(),
+              const SizedBox(height: AppSizes.lg),
+
+              // Customer Activity Feed (From Prompt 11)
+              const CustomerActivityFeed(
+                activities: [], // Empty until DashboardProvider is connected
+                isLoading: false,
+              ),
             ],
           ),
         );
