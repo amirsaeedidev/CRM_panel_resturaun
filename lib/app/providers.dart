@@ -17,6 +17,10 @@ import '../repositories/orders_repository.dart';
 import '../repositories/banners_repository.dart';
 import '../repositories/discounts_repository.dart';
 import '../repositories/reservations_repository.dart';
+import '../providers/tables_provider.dart';
+import '../repositories/tables_repository.dart';
+
+
 
 class AppProviders {
   static List<SingleChildWidget> get providers => [
@@ -32,6 +36,7 @@ class AppProviders {
     Provider<BannersRepository>(create: (_) => BannersRepository()),
     Provider<DiscountsRepository>(create: (_) => DiscountsRepository()),
     Provider<ReservationsRepository>(create: (_) => ReservationsRepository()),
+    Provider<TablesRepository>(create: (_) => TablesRepository()),
 
     // Feature Providers
     ChangeNotifierProvider<ProductsProvider>(
@@ -52,5 +57,10 @@ class AppProviders {
     ChangeNotifierProvider<ReservationsProvider>(
       create: (context) => ReservationsProvider(context.read<ReservationsRepository>()),
     ),
+    ChangeNotifierProvider<TablesProvider>(
+  create: (context) => TablesProvider(context.read<TablesRepository>()),
+    ),
+
+
   ];
 }
