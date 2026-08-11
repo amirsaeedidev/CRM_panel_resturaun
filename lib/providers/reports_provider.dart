@@ -11,15 +11,13 @@ class ReportsProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   ReportModel? _salesReport;
-  ReportModel? _topProductsReport;
-  ReportModel? _customerDistributionReport;
+  List<Map<String, dynamic>> _topProducts = [];
 
   // Getters
   bool get isLoading => _isLoading;
   String? get error => _error;
   ReportModel? get salesReport => _salesReport;
-  ReportModel? get topProductsReport => _topProductsReport;
-  ReportModel? get customerDistributionReport => _customerDistributionReport;
+  List<Map<String, dynamic>> get topProducts => _topProducts;
 
   Future<void> fetchSalesReport({required DateTime startDate, required DateTime endDate}) async {
     _isLoading = true;
@@ -28,6 +26,8 @@ class ReportsProvider extends ChangeNotifier {
 
     try {
       _salesReport = await _repository.getSalesReport(startDate: startDate, endDate: endDate);
+      // Also fetch top products for the selected period
+      await fetchTopProducts(startDate: startDate, endDate: endDate);
     } catch (e, st) {
       LoggerService.error('Fetch sales report failed in provider', error: e, stackTrace: st);
       _error = e.toString();
@@ -37,23 +37,12 @@ class ReportsProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTopProductsReport({int limit = 10}) async {
+  Future<void> fetchTopProducts({required DateTime startDate, required DateTime endDate, int limit = 10}) async {
     try {
-      _topProductsReport = await _repository.getTopProductsReport(limit: limit);
+      _topProducts = await _repository.getTopProducts(startDate: startDate, endDate: endDate, limit: limit);
       notifyListeners();
     } catch (e, st) {
-      LoggerService.error('Fetch top products report failed in provider', error: e, stackTrace: st);
-      _error = e.toString();
-      notifyListeners();
-    }
-  }
-
-  Future<void> fetchCustomerDistributionReport() async {
-    try {
-      _customerDistributionReport = await _repository.getCustomerDistributionReport();
-      notifyListeners();
-    } catch (e, st) {
-      LoggerService.error('Fetch customer distribution report failed in provider', error: e, stackTrace: st);
+      LoggerService.error('Fetch top products failed in provider', error: e, stackTrace: st);
       _error = e.toString();
       notifyListeners();
     }
