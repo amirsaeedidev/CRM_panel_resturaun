@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../core/constants/app_routes.dart';
 import '../core/widgets/main_layout.dart';
+import '../features/auth/screens/login_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
 import '../features/categories/screens/categories_list_screen.dart';
 import '../features/categories/screens/category_form_screen.dart';
@@ -19,16 +20,26 @@ import '../features/orders/screens/order_details_screen.dart';
 import '../features/reports/screens/reports_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/reservations/screens/reservations_list_screen.dart';
-// import '../features/tables/screens/tables_grid_screen.dart'; // Uncomment when created
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static GoRouter get router => GoRouter(
-        initialLocation: AppRoutes.dashboard,
+        initialLocation: AppRoutes.login, // Changed to Login
         navigatorKey: _rootNavigatorKey,
         routes: [
+          // Login Route (Outside Shell)
+          GoRoute(
+            path: AppRoutes.login,
+            name: AppRoutes.login,
+            parentNavigatorKey: _rootNavigatorKey,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: LoginScreen(),
+            ),
+          ),
+
+          // Routes inside the Main Layout (Sidebar + Topbar)
           ShellRoute(
             builder: (context, state, child) => MainLayout(child: child),
             routes: [
@@ -40,7 +51,6 @@ class AppRouter {
               GoRoute(path: '/banners', name: 'banners', pageBuilder: (context, state) => const NoTransitionPage(child: BannersListScreen())),
               GoRoute(path: '/discounts', name: 'discounts', pageBuilder: (context, state) => const NoTransitionPage(child: DiscountsListScreen())),
               GoRoute(path: AppRoutes.reservations, name: AppRoutes.reservations, pageBuilder: (context, state) => const NoTransitionPage(child: ReservationsListScreen())),
-              // GoRoute(path: AppRoutes.tables, name: AppRoutes.tables, pageBuilder: (context, state) => const NoTransitionPage(child: TablesGridScreen())), // Uncomment when created
               GoRoute(path: AppRoutes.reports, name: AppRoutes.reports, pageBuilder: (context, state) => const NoTransitionPage(child: ReportsScreen())),
               GoRoute(path: AppRoutes.settings, name: AppRoutes.settings, pageBuilder: (context, state) => const NoTransitionPage(child: SettingsScreen())),
             ],
@@ -95,7 +105,6 @@ class AppRouter {
             name: 'discount_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              // Fixed: Removed int.parse because DiscountFormScreen expects a String
               final discountId = state.pathParameters['id']!;
               return MaterialPage(child: DiscountFormScreen(discountId: discountId));
             },

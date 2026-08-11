@@ -5,6 +5,7 @@ import '../providers/theme_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
 import '../providers/settings_provider.dart';
+import '../providers/auth_provider.dart';
 
 import '../providers/products_provider.dart';
 import '../providers/categories_provider.dart';
@@ -15,6 +16,7 @@ import '../providers/reservations_provider.dart';
 import '../providers/tables_provider.dart';
 import '../providers/reports_provider.dart';
 
+import '../repositories/auth_repository.dart';
 import '../repositories/products_repository.dart';
 import '../repositories/categories_repository.dart';
 import '../repositories/orders_repository.dart';
@@ -23,16 +25,18 @@ import '../repositories/discounts_repository.dart';
 import '../repositories/reservations_repository.dart';
 import '../repositories/tables_repository.dart';
 import '../repositories/reports_repository.dart';
-
+import '../providers/notifications_provider.dart';
 class AppProviders {
   static List<SingleChildWidget> get providers => [
     // Core Providers
     ChangeNotifierProvider(create: (_) => ThemeProvider()),
     ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
     ChangeNotifierProvider(create: (_) => NavigationProvider()),
-    ChangeNotifierProvider(create: (_) => SettingsProvider()), // Added Settings Provider
+    ChangeNotifierProvider(create: (_) => SettingsProvider()),
+    ChangeNotifierProvider(create: (_) => NotificationsProvider()),
 
     // Repositories
+    Provider<AuthRepository>(create: (_) => AuthRepository()),
     Provider<ProductsRepository>(create: (_) => ProductsRepository()),
     Provider<CategoriesRepository>(create: (_) => CategoriesRepository()),
     Provider<OrdersRepository>(create: (_) => OrdersRepository()),
@@ -43,6 +47,9 @@ class AppProviders {
     Provider<ReportsRepository>(create: (_) => ReportsRepository()),
 
     // Feature Providers
+    ChangeNotifierProvider<AuthProvider>(
+      create: (context) => AuthProvider(context.read<AuthRepository>()),
+    ),
     ChangeNotifierProvider<ProductsProvider>(
       create: (context) => ProductsProvider(context.read<ProductsRepository>()),
     ),

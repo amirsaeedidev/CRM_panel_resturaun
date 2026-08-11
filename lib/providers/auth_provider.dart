@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Added for User type
-import '../core/services/supabase_service.dart';
 import '../core/services/logger_service.dart';
 import '../core/services/storage_service.dart';
-// import '../models/user_model.dart'; // Removed temporarily
+import '../models/user_model.dart';
+import '../repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
-  // final AuthRepository _authRepository;
+  final AuthRepository _authRepository;
+  AuthProvider(this._authRepository) {
+    _init(); // Fixed: Call init method in constructor
+  }
   
-  User? _currentUser; // Using Supabase User type directly
+  UserModel? _currentUser; // Fixed: Changed from Supabase User to UserModel
   bool _isLoading = false;
   String? _errorMessage;
 
-  AuthProvider(/* this._authRepository */) {
-    _init();
-  }
-
-  User? get currentUser => _currentUser;
+  UserModel? get currentUser => _currentUser;
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _currentUser != null;
   String? get errorMessage => _errorMessage;
 
   void _init() {
     try {
-      final session = SupabaseService.auth.currentSession;
-      if (session != null) {
-        _currentUser = session.user;
+      _currentUser = _authRepository.getCurrentUser();
+      if (_currentUser != null) {
+        LoggerService.info('Session restored for user: ${_currentUser!.email}');
       }
     } catch (e) {
       LoggerService.error('Auth init failed', error: e);
@@ -38,18 +36,12 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await SupabaseService.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-      
-      if (response.user != null) {
-        _currentUser = response.user;
-        await StorageService.setString('user_id', response.user!.id);
-        LoggerService.info('User logged in successfully');
-      }
+      final user = await _authRepository.login(email, password);
+      _currentUser = user;
+      await StorageService.setString('user_id', user.id);
+      LoggerService.info('User logged in successfully');
     } catch (e) {
-      _errorMessage = 'خطا در ورود: ${e.toString()}';
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       LoggerService.error('Login failed', error: e);
     } finally {
       _isLoading = false;
@@ -62,12 +54,12 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await SupabaseService.auth.signOut();
+      await _authRepository.logout();
       _currentUser = null;
       await StorageService.remove('user_id');
       LoggerService.info('User logged out successfully');
     } catch (e) {
-      _errorMessage = 'خطا در خروج: ${e.toString()}';
+      _errorMessage = e.toString().replaceFirst('Exception: ', '');
       LoggerService.error('Logout failed', error: e);
     } finally {
       _isLoading = false;
