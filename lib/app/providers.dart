@@ -10,6 +10,8 @@ import '../providers/orders_provider.dart';
 import '../providers/banners_provider.dart';
 import '../providers/discounts_provider.dart';
 import '../providers/reservations_provider.dart';
+import '../providers/tables_provider.dart';
+import '../providers/reports_provider.dart';
 
 import '../repositories/products_repository.dart';
 import '../repositories/categories_repository.dart';
@@ -17,10 +19,8 @@ import '../repositories/orders_repository.dart';
 import '../repositories/banners_repository.dart';
 import '../repositories/discounts_repository.dart';
 import '../repositories/reservations_repository.dart';
-import '../providers/tables_provider.dart';
 import '../repositories/tables_repository.dart';
-
-
+import '../repositories/reports_repository.dart';
 
 class AppProviders {
   static List<SingleChildWidget> get providers => [
@@ -37,6 +37,7 @@ class AppProviders {
     Provider<DiscountsRepository>(create: (_) => DiscountsRepository()),
     Provider<ReservationsRepository>(create: (_) => ReservationsRepository()),
     Provider<TablesRepository>(create: (_) => TablesRepository()),
+    Provider<ReportsRepository>(create: (_) => ReportsRepository()),
 
     // Feature Providers
     ChangeNotifierProvider<ProductsProvider>(
@@ -58,9 +59,10 @@ class AppProviders {
       create: (context) => ReservationsProvider(context.read<ReservationsRepository>()),
     ),
     ChangeNotifierProvider<TablesProvider>(
-  create: (context) => TablesProvider(context.read<TablesRepository>()),
+      create: (context) => TablesProvider(context.read<TablesRepository>()),
     ),
-
-
+    ChangeNotifierProvider<ReportsProvider>(
+      create: (context) => ReportsProvider(context.read<ReportsRepository>()),
+    ),
   ];
 }

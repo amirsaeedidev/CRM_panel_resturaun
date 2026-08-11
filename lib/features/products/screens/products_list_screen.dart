@@ -494,7 +494,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
                   setState(() => isToggling = false);
                 }
               },
-              activeColor: AppColors.success,
+              activeThumbColor: AppColors.success,
             ),
             if (isToggling)
               const SizedBox(

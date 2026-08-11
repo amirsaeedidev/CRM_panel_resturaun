@@ -113,7 +113,7 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
       'display_order': int.parse(_priorityController.text),
       'is_active': _isActive,
       'action_url': _selectedDiscountId, // Store selected discount ID
-      if (imageUrl != null) 'image_url': imageUrl,
+      'image_url': ?imageUrl,
     };
 
     try {
@@ -268,7 +268,7 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
                   title: const Text('Active Banner'),
                   subtitle: const Text('If disabled, banner will not be shown in the app'),
                   value: _isActive,
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                   onChanged: (val) => setState(() => _isActive = val),
                 ),
               ),

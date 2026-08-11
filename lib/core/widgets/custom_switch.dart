@@ -20,7 +20,7 @@ class CustomSwitch extends StatelessWidget {
     return Switch(
       value: value,
       onChanged: onChanged,
-      activeColor: activeColor ?? Colors.white,
+      activeThumbColor: activeColor ?? Colors.white,
       activeTrackColor: activeColor?.withOpacity(0.8) ?? AppColors.primary,
       inactiveThumbColor: AppColors.getPrimaryText(context),
       inactiveTrackColor: AppColors.getBorder(context),

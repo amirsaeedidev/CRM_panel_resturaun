@@ -1,61 +1,65 @@
-import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../core/services/supabase_service.dart';
 import '../core/services/logger_service.dart';
 import '../models/report_model.dart';
-import '../repositories/reports_repository.dart';
 
-class ReportsProvider extends ChangeNotifier {
-  final ReportsRepository _repository;
-  ReportsProvider(this._repository);
+class ReportsRepository {
+  final _client = SupabaseService.client;
 
-  // State
-  bool _isLoading = false;
-  String? _error;
-  ReportModel? _salesReport;
-  ReportModel? _topProductsReport;
-  ReportModel? _customerDistributionReport;
-
-  // Getters
-  bool get isLoading => _isLoading;
-  String? get error => _error;
-  ReportModel? get salesReport => _salesReport;
-  ReportModel? get topProductsReport => _topProductsReport;
-  ReportModel? get customerDistributionReport => _customerDistributionReport;
-
-  Future<void> fetchSalesReport({required DateTime startDate, required DateTime endDate}) async {
-    _isLoading = true;
-    _error = null;
-    notifyListeners();
-
+  /// Fetches sales report (e.g., monthly sales for bar chart)
+  Future<ReportModel> getSalesReport({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
     try {
-      _salesReport = await _repository.getSalesReport(startDate: startDate, endDate: endDate);
+      final response = await _client.rpc(
+        'get_sales_report',
+        params: {
+          'start_date': startDate.toIso8601String(),
+          'end_date': endDate.toIso8601String(),
+        },
+      );
+
+      return ReportModel.fromJson(response as Map<String, dynamic>);
+    } on PostgrestException catch (e) {
+      LoggerService.error('Fetch sales report failed', error: e);
+      throw Exception('خطا در دریافت گزارش فروش: ${e.message}');
     } catch (e, st) {
-      LoggerService.error('Fetch sales report failed in provider', error: e, stackTrace: st);
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
+      LoggerService.error('Unexpected fetch sales report error', error: e, stackTrace: st);
+      throw Exception('خطای ناشناخته در دریافت گزارش فروش');
     }
   }
 
-  Future<void> fetchTopProductsReport({int limit = 10}) async {
+  /// Fetches top-selling products report
+  Future<ReportModel> getTopProductsReport({int limit = 10}) async {
     try {
-      _topProductsReport = await _repository.getTopProductsReport(limit: limit);
-      notifyListeners();
+      final response = await _client.rpc(
+        'get_top_products',
+        params: {'limit_count': limit},
+      );
+
+      return ReportModel.fromJson(response as Map<String, dynamic>);
+    } on PostgrestException catch (e) {
+      LoggerService.error('Fetch top products report failed', error: e);
+      throw Exception('خطا در دریافت گزارش محصولات پرفروش: ${e.message}');
     } catch (e, st) {
-      LoggerService.error('Fetch top products report failed in provider', error: e, stackTrace: st);
-      _error = e.toString();
-      notifyListeners();
+      LoggerService.error('Unexpected fetch top products error', error: e, stackTrace: st);
+      throw Exception('خطای ناشناخته در دریافت گزارش محصولات');
     }
   }
 
-  Future<void> fetchCustomerDistributionReport() async {
+  /// Fetches customer distribution report (e.g., for pie chart)
+  Future<ReportModel> getCustomerDistributionReport() async {
     try {
-      _customerDistributionReport = await _repository.getCustomerDistributionReport();
-      notifyListeners();
+      final response = await _client.rpc('get_customer_distribution');
+
+      return ReportModel.fromJson(response as Map<String, dynamic>);
+    } on PostgrestException catch (e) {
+      LoggerService.error('Fetch customer distribution failed', error: e);
+      throw Exception('خطا در دریافت توزیع مشتریان: ${e.message}');
     } catch (e, st) {
-      LoggerService.error('Fetch customer distribution report failed in provider', error: e, stackTrace: st);
-      _error = e.toString();
-      notifyListeners();
+      LoggerService.error('Unexpected fetch customer distribution error', error: e, stackTrace: st);
+      throw Exception('خطای ناشناخته در دریافت توزیع مشتریان');
     }
   }
 }

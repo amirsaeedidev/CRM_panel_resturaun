@@ -197,7 +197,7 @@ class InvoicePrintDialog extends StatelessWidget {
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
 
                         _dashedDivider(),
 

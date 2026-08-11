@@ -10,7 +10,7 @@ class AuthRepository {
   UserModel? getCurrentUser() {
     final session = _auth.currentSession;
     if (session?.user != null) {
-      return _mapToUserModel(session!.user!);
+      return _mapToUserModel(session!.user);
     }
     return null;
   }
