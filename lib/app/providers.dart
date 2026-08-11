@@ -4,6 +4,8 @@ import 'package:provider/single_child_widget.dart';
 import '../providers/theme_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/settings_provider.dart';
+
 import '../providers/products_provider.dart';
 import '../providers/categories_provider.dart';
 import '../providers/orders_provider.dart';
@@ -28,6 +30,7 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => ThemeProvider()),
     ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
     ChangeNotifierProvider(create: (_) => NavigationProvider()),
+    ChangeNotifierProvider(create: (_) => SettingsProvider()), // Added Settings Provider
 
     // Repositories
     Provider<ProductsRepository>(create: (_) => ProductsRepository()),

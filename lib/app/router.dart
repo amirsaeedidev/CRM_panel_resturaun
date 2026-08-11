@@ -19,7 +19,6 @@ import '../features/orders/screens/order_details_screen.dart';
 import '../features/reports/screens/reports_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/reservations/screens/reservations_list_screen.dart';
-
 // import '../features/tables/screens/tables_grid_screen.dart'; // Uncomment when created
 
 class AppRouter {
@@ -96,7 +95,8 @@ class AppRouter {
             name: 'discount_edit',
             parentNavigatorKey: _rootNavigatorKey,
             pageBuilder: (context, state) {
-              final discountId = int.parse(state.pathParameters['id']!);
+              // Fixed: Removed int.parse because DiscountFormScreen expects a String
+              final discountId = state.pathParameters['id']!;
               return MaterialPage(child: DiscountFormScreen(discountId: discountId));
             },
           ),
