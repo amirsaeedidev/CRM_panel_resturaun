@@ -6,11 +6,15 @@ import '../repositories/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthRepository _authRepository;
+  
+  // پرچم تست: برای اتصال واقعی این را false کنید
+  static const bool isMockMode = true; 
+  
   AuthProvider(this._authRepository) {
-    _init(); // Fixed: Call init method in constructor
+    _init(); 
   }
   
-  UserModel? _currentUser; // Fixed: Changed from Supabase User to UserModel
+  UserModel? _currentUser; 
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -20,6 +24,8 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   void _init() {
+    if (isMockMode) return; // در حالت تست، چیزی را لود نکن
+    
     try {
       _currentUser = _authRepository.getCurrentUser();
       if (_currentUser != null) {
@@ -34,6 +40,22 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
+
+    // --- بخش شبیه‌سازی (Mock) ---
+    if (isMockMode) {
+      await Future.delayed(const Duration(seconds: 1)); // تاخیر ۱ ثانیه‌ای برای نمایش لودینگ
+      _currentUser = UserModel(
+        id: 'mock-admin-id',
+        email: email,
+        firstName: 'Admin',
+        role: 'admin',
+        createdAt: DateTime.now(),
+      );
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+    // -----------------------------
 
     try {
       final user = await _authRepository.login(email, password);
@@ -52,6 +74,15 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logout() async {
     _isLoading = true;
     notifyListeners();
+
+    // --- بخش شبیه‌سازی (Mock) ---
+    if (isMockMode) {
+      _currentUser = null;
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+    // -----------------------------
 
     try {
       await _authRepository.logout();
