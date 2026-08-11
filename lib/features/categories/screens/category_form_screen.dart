@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/config/supabase_config.dart'; // Added for bucket config
 import '../../../core/services/upload_service.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/app_button.dart';
@@ -15,7 +16,7 @@ import '../../../providers/categories_provider.dart';
 class CategoryFormScreen extends StatefulWidget {
   final String? categoryId;
 
-  const CategoryFormScreen({super.key, this.categoryId}); // Fixed here
+  const CategoryFormScreen({super.key, this.categoryId});
 
   @override
   State<CategoryFormScreen> createState() => _CategoryFormScreenState();
@@ -38,7 +39,6 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
   void initState() {
     super.initState();
     if (isEditing) {
-      // Fetch existing category data via Provider
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final provider = context.read<CategoriesProvider>();
         final category = provider.getCategoryById(widget.categoryId!);
@@ -46,7 +46,6 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
           _nameController.text = category.name;
           _descriptionController.text = category.description ?? '';
           _sortOrderController.text = category.displayOrder.toString();
-          // Assuming loyaltyPoints might exist in future model or default to 0
           _loyaltyPointsController.text = '0'; 
           _isActive = category.isActive;
           setState(() {});
@@ -88,10 +87,11 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
 
     String? imageUrl;
     if (_selectedImage != null) {
-      // Upload image via UploadService
+      // Upload image to the specific category icons bucket
       imageUrl = await UploadService.uploadFile(
         file: _selectedImage!,
-        folderName: 'categories',
+        folderName: 'icons', // Folder inside the bucket
+        bucketName: SupabaseConfig.categoryIconsBucket, // Targeting 'categories' bucket
       );
       
       if (imageUrl == null) {
@@ -114,7 +114,7 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
       'display_order': int.parse(_sortOrderController.text),
       'loyalty_points_per_item': int.parse(_loyaltyPointsController.text),
       'is_active': _isActive,
-      'image_url': ?imageUrl,
+      if (imageUrl != null) 'image_url': imageUrl, // Fixed syntax here
     };
 
     try {
@@ -190,7 +190,7 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
                               Icon(Icons.add_a_photo_outlined, size: 32, color: AppColors.getSecondaryText(context)),
                               const SizedBox(height: AppSizes.sm),
                               Text(
-                                'Add Image',
+                                'Add Icon',
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: AppColors.getSecondaryText(context),
                                     ),

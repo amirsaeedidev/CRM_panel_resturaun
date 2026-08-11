@@ -36,7 +36,6 @@ class UploadService {
   /// Picks any file using file_picker
   static Future<File?> pickFile() async {
     try {
-      // Changed for file_picker v11+ compatibility
       final result = await FilePicker.pickFiles(allowMultiple: false);
       if (result != null && result.files.single.path != null) {
         return File(result.files.single.path!);
@@ -48,26 +47,30 @@ class UploadService {
     }
   }
 
-  /// Uploads a file to Supabase Storage
+  /// Uploads a file to a specific Supabase Storage Bucket
   /// Returns the public URL if successful, otherwise null.
   static Future<String?> uploadFile({
     required File file,
     required String folderName, // e.g., 'products', 'avatars'
+    String? bucketName, // If null, uses default storageBucket
   }) async {
     try {
       final fileExt = file.path.split('.').last;
       final fileName = '${_uuid.v4()}.$fileExt';
       final filePath = '$folderName/$fileName';
 
+      // Use specified bucket or fall back to default
+      final targetBucket = bucketName ?? SupabaseConfig.storageBucket;
+
       await SupabaseService.storage
-          .from(SupabaseConfig.storageBucket)
+          .from(targetBucket)
           .upload(filePath, file);
 
       final publicUrl = SupabaseService.storage
-          .from(SupabaseConfig.storageBucket)
+          .from(targetBucket)
           .getPublicUrl(filePath);
 
-      LoggerService.info('File uploaded successfully: $publicUrl');
+      LoggerService.info('File uploaded to $targetBucket successfully: $publicUrl');
       return publicUrl;
     } catch (e, st) {
       LoggerService.error('uploadFile failed', error: e, stackTrace: st);
@@ -76,14 +79,20 @@ class UploadService {
   }
 
   /// Deletes a file from Supabase Storage using its path
-  static Future<bool> deleteFile({required String folderName, required String fileName}) async {
+  static Future<bool> deleteFile({
+    required String folderName, 
+    required String fileName,
+    String? bucketName,
+  }) async {
     try {
       final filePath = '$folderName/$fileName';
+      final targetBucket = bucketName ?? SupabaseConfig.storageBucket;
+      
       await SupabaseService.storage
-          .from(SupabaseConfig.storageBucket)
+          .from(targetBucket)
           .remove([filePath]);
       
-      LoggerService.info('File deleted successfully: $filePath');
+      LoggerService.info('File deleted from $targetBucket successfully: $filePath');
       return true;
     } catch (e, st) {
       LoggerService.error('deleteFile failed', error: e, stackTrace: st);
