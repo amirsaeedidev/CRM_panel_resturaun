@@ -114,7 +114,7 @@ class _CategoryFormScreenState extends State<CategoryFormScreen> {
       'display_order': int.parse(_sortOrderController.text),
       'loyalty_points_per_item': int.parse(_loyaltyPointsController.text),
       'is_active': _isActive,
-      if (imageUrl != null) 'image_url': imageUrl, // Fixed syntax here
+      'image_url': ?imageUrl, // Fixed syntax here
     };
 
     try {

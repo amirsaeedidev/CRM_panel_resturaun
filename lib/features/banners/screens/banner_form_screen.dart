@@ -11,7 +11,6 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_dropdown.dart';
 import '../../../core/widgets/app_textfield.dart';
-import '../../../core/widgets/custom_switch.dart';
 import '../../../models/discount_model.dart';
 import '../../../providers/banners_provider.dart';
 import '../../../providers/discounts_provider.dart';

@@ -19,7 +19,7 @@ class CustomersRepository {
       var query = _client
           .from('users')
           .select('*')
-          .eq('role', 'user'); // Only fetch users with 'user' role
+          .eq('role', 'customer'); // Changed from 'user' to 'customer'
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
         query = query.or('first_name.ilike.%$searchQuery%,last_name.ilike.%$searchQuery%,email.ilike.%$searchQuery%,phone.ilike.%$searchQuery%');

@@ -9,7 +9,6 @@ import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../core/widgets/app_search.dart';
-import '../../../core/widgets/app_table.dart';
 import '../../../core/widgets/custom_chip.dart';
 import '../../../models/discount_model.dart';
 import '../../../providers/discounts_provider.dart';

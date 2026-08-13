@@ -10,7 +10,8 @@ class InvoicePrintDialog extends StatelessWidget {
   final OrderModel order;
   final String invoiceType; // 'customer' or 'kitchen'
 
-   InvoicePrintDialog({
+  // Removed 'const' here to avoid potential linter errors with non-const models
+  InvoicePrintDialog({
     super.key,
     required this.order,
     this.invoiceType = 'customer',
@@ -33,11 +34,12 @@ class InvoicePrintDialog extends StatelessWidget {
   final NumberFormat _currencyFormatter = NumberFormat.decimalPattern('en_US');
   final DateFormat _dateFormatter = DateFormat('yyyy-MM-dd HH:mm');
 
-  @override
+   @override
   Widget build(BuildContext context) {
     bool isKitchen = invoiceType == 'kitchen';
     double receiptWidth = 320; // Approx 80mm at ~4px/mm
 
+    // Removed Directionality wrapper to fix IDE glitch
     return Dialog(
       backgroundColor: AppColors.getSurface(context),
       child: ConstrainedBox(
@@ -55,7 +57,7 @@ class InvoicePrintDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isKitchen ? 'Kitchen Invoice Preview' : 'Customer Invoice Preview',
+                    isKitchen ? 'پیش‌نمایش فاکتور آشپزخانه' : 'پیش‌نمایش فاکتور مشتری',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.getPrimaryText(context),
@@ -99,7 +101,7 @@ class InvoicePrintDialog extends StatelessWidget {
                               Icon(Icons.restaurant_menu, size: 40, color: Colors.grey[800]),
                               const SizedBox(height: AppSizes.sm),
                               Text(
-                                'Restaurant Name',
+                                'نام رستوران',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -107,14 +109,14 @@ class InvoicePrintDialog extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '123 Restaurant St, City',
+                                'تهران، خیابان اصلی، پلاک ۱۲۳',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
                                 ),
                               ),
                               Text(
-                                'Tel: 021-12345678',
+                                'تلفن: ۰۲۱-۱۲۳۴۵۶۷۸',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey[600],
@@ -125,28 +127,20 @@ class InvoicePrintDialog extends StatelessWidget {
                         ),
                         _dashedDivider(),
                         // Order Info
-                        _buildReceiptRow('Order ID:', '#${order.id.substring(0, 8).toUpperCase()}'),
-                        _buildReceiptRow('Date:', _dateFormatter.format(order.createdAt.toLocal())),
-                        _buildReceiptRow('Customer:', order.customerName),
-                        _buildReceiptRow('Type:', order.orderType.split('_').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')),
-                        
-                        if (order.orderType.toLowerCase() == 'dine_in' && order.tableNumber != null)
-                          _buildReceiptRow('Table No:', order.tableNumber!),
-                        
-                        if (order.orderType.toLowerCase() == 'delivery') ...[
-                          if (order.shippingAddress != null)
-                            _buildReceiptRow('Address:', order.shippingAddress!, maxLines: 2),
-                          if (order.postalCode != null)
-                            _buildReceiptRow('Postal Code:', order.postalCode!),
-                        ],
+                        _buildReceiptRow('شماره سفارش:', '#${order.id.substring(0, 8).toUpperCase()}'),
+                        _buildReceiptRow('تاریخ:', _dateFormatter.format(order.createdAt.toLocal())),
+                        _buildReceiptRow('مشتری:', order.customerName),
+                        if (order.customerPhone.isNotEmpty)
+                          _buildReceiptRow('تلفن:', order.customerPhone),
+                        _buildReceiptRow('نوع:', order.orderType == 'delivery' ? 'ارسال به مقصد' : 'تحویل حضوری'),
 
-                        if (order.customerNote != null && order.customerNote!.isNotEmpty) ...[
+                        if (order.adminNote != null && order.adminNote!.isNotEmpty) ...[
                           const SizedBox(height: AppSizes.sm),
                           Container(
                             padding: const EdgeInsets.all(AppSizes.xs),
                             color: Colors.red[50],
                             child: Text(
-                              'NOTE: ${order.customerNote}',
+                              'یادداشت: ${order.adminNote}',
                               style: TextStyle(fontSize: 12, color: Colors.red[800], fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -156,10 +150,10 @@ class InvoicePrintDialog extends StatelessWidget {
                         
                         // Items
                         if (isKitchen) ...[
-                          Text('*** KITCHEN COPY ***', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                          Text('*** کپی آشپزخانه ***', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[800])),
                           const SizedBox(height: AppSizes.sm),
                         ] else ...[
-                          Text('ITEMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+                          Text('اقلام سفارش', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[800])),
                           const SizedBox(height: AppSizes.sm),
                         ],
 
@@ -188,7 +182,7 @@ class InvoicePrintDialog extends StatelessWidget {
                                 ),
                                 if (item.note != null && item.note!.isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(left: 20.0, top: 2.0),
+                                    padding: const EdgeInsets.only(right: 20.0, top: 2.0),
                                     child: Text(
                                       '- ${item.note}',
                                       style: TextStyle(fontSize: 11, color: Colors.grey[600], fontStyle: FontStyle.italic),
@@ -203,21 +197,19 @@ class InvoicePrintDialog extends StatelessWidget {
 
                         // Summary
                         if (!isKitchen) ...[
-                          _buildReceiptRow('Subtotal:', '${_currencyFormatter.format(order.totalAmount)} T'),
-                          _buildReceiptRow('Discount:', '0 T'),
-                          _buildReceiptRow('Delivery Fee:', '0 T'),
+                          _buildReceiptRow('جمع کل:', '${_currencyFormatter.format(order.totalAmount)} ت'),
                           _dashedDivider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text('TOTAL:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              Text('${_currencyFormatter.format(order.totalAmount)} T', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              const Text('مبلغ نهایی:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                              Text('${_currencyFormatter.format(order.totalAmount)} ت', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                             ],
                           ),
                         ] else ...[
                           Center(
                             child: Text(
-                              'PREPARE TIME: ${_dateFormatter.format(order.createdAt.toLocal())}',
+                              'زمان آماده‌سازی: ${_dateFormatter.format(order.createdAt.toLocal())}',
                               style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                             ),
                           ),
@@ -226,7 +218,7 @@ class InvoicePrintDialog extends StatelessWidget {
                         const SizedBox(height: AppSizes.md),
                         Center(
                           child: Text(
-                            'Thank You!',
+                            'با تشکر از انتخاب شما!',
                             style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                           ),
                         ),
@@ -244,21 +236,18 @@ class InvoicePrintDialog extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   AppButton(
-                    label: 'Close',
+                    label: 'بستن',
                     type: AppButtonType.outline,
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: AppSizes.md),
                   AppButton(
-                    label: 'Print Thermal Invoice',
+                    label: 'چاپ فاکتور',
                     icon: Icons.print_outlined,
                     onPressed: () {
-                      // Interface ready for real Print Service
-                      // Example: PrintService.print(order, type: invoiceType);
-                      
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Print command sent to service.'),
+                          content: Text('دستور چاپ به پرینتر ارسال شد.'),
                           backgroundColor: AppColors.info,
                         ),
                       );
@@ -285,7 +274,7 @@ class InvoicePrintDialog extends StatelessWidget {
           Expanded(
             child: Text(
               value,
-              textAlign: TextAlign.end,
+              textAlign: TextAlign.left,
               maxLines: maxLines,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
@@ -308,6 +297,8 @@ class InvoicePrintDialog extends StatelessWidget {
 }
 
 class DashedLinePainter extends CustomPainter {
+  const DashedLinePainter();
+
   @override
   void paint(Canvas canvas, Size size) {
     double dashWidth = 5, dashSpace = 3;

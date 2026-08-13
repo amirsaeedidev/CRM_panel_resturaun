@@ -369,7 +369,7 @@ class _DiscountFormScreenState extends State<DiscountFormScreen> {
                   title: const Text('Active Discount'),
                   subtitle: const Text('If disabled, discount cannot be used by customers'),
                   value: _isActive,
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                   onChanged: (val) => setState(() => _isActive = val),
                 ),
               ),

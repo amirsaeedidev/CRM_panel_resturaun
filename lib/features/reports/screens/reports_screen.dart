@@ -1,6 +1,5 @@
 import 'package:crm_panel/core/theme/app_radius.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../core/constants/app_colors.dart';
@@ -8,7 +7,6 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_loading.dart';
 import '../../../models/report_model.dart';
-import '../../../providers/reports_provider.dart';
 import '../../../shared/widgets/empty_widget.dart';
 import '../../../shared/widgets/error_widget.dart' as app_error;
 

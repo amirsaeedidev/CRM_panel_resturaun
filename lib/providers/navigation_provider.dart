@@ -40,6 +40,10 @@ class NavigationProvider extends ChangeNotifier {
         return 5;
       case AppRoutes.settings:
         return 6;
+      case AppRoutes.tables:
+        return 7;
+      case AppRoutes.reservations:
+        return 8;
       default:
         return 0;
     }
@@ -61,6 +65,10 @@ class NavigationProvider extends ChangeNotifier {
         return AppRoutes.reports;
       case 6:
         return AppRoutes.settings;
+      case 7:
+        return AppRoutes.tables;
+      case 8:
+        return AppRoutes.reservations;
       default:
         return AppRoutes.dashboard;
     }

@@ -8,6 +8,7 @@ import '../constants/app_routes.dart';
 import '../theme/app_typography.dart';
 import 'navigation_item.dart';
 import '../../providers/navigation_provider.dart';
+import '../../providers/auth_provider.dart';
 
 class AppSidebar extends StatelessWidget {
   const AppSidebar({super.key});
@@ -15,6 +16,15 @@ class AppSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navProvider = context.watch<NavigationProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    
+    final user = authProvider.currentUser;
+    final displayName = user != null 
+        ? ((user.firstName != null && user.firstName!.isNotEmpty) 
+            ? '${user.firstName} ${user.lastName ?? ''}'.trim() 
+            : user.email)
+        : 'مدیر';
+    final displayEmail = user?.email ?? '—';
 
     return Container(
       width: AppSizes.sidebarWidth,
@@ -105,6 +115,24 @@ class AppSidebar extends StatelessWidget {
                   },
                 ),
                 NavigationItem(
+                  icon: Icons.table_restaurant_outlined,
+                  label: 'میزها',
+                  isActive: navProvider.selectedIndex == 7,
+                  onTap: () {
+                    navProvider.updateIndex(7);
+                    context.go(AppRoutes.tables);
+                  },
+                ),
+                NavigationItem(
+                  icon: Icons.event_available_outlined,
+                  label: 'رزروها',
+                  isActive: navProvider.selectedIndex == 8,
+                  onTap: () {
+                    navProvider.updateIndex(8);
+                    context.go(AppRoutes.reservations);
+                  },
+                ),
+                NavigationItem(
                   icon: Icons.settings_outlined,
                   label: AppStrings.settings,
                   isActive: navProvider.selectedIndex == 6,
@@ -135,19 +163,27 @@ class AppSidebar extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Admin User',
+                        displayName,
                         style: AppTypography.titleSmall.copyWith(color: AppColors.textPrimaryDark),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        'admin@crm.com',
+                        displayEmail,
                         style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondaryDark),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
                 IconButton(
                   icon: Icon(Icons.logout, color: AppColors.textSecondaryDark, size: AppSizes.iconSm),
-                  onPressed: () {},
+                  tooltip: 'خروج',
+                  onPressed: () {
+                    context.read<AuthProvider>().logout();
+                    context.go(AppRoutes.login);
+                  },
                 ),
               ],
             ),

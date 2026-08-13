@@ -20,13 +20,14 @@ import '../features/orders/screens/order_details_screen.dart';
 import '../features/reports/screens/reports_screen.dart';
 import '../features/settings/screens/settings_screen.dart';
 import '../features/reservations/screens/reservations_list_screen.dart';
+import '../features/tables/screens/tables_grid_screen.dart'; // Added import
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
   static GoRouter get router => GoRouter(
-        initialLocation: AppRoutes.login, // Changed to Login
+        initialLocation: AppRoutes.login,
         navigatorKey: _rootNavigatorKey,
         routes: [
           // Login Route (Outside Shell)
@@ -51,6 +52,8 @@ class AppRouter {
               GoRoute(path: '/banners', name: 'banners', pageBuilder: (context, state) => const NoTransitionPage(child: BannersListScreen())),
               GoRoute(path: '/discounts', name: 'discounts', pageBuilder: (context, state) => const NoTransitionPage(child: DiscountsListScreen())),
               GoRoute(path: AppRoutes.reservations, name: AppRoutes.reservations, pageBuilder: (context, state) => const NoTransitionPage(child: ReservationsListScreen())),
+              // Added Tables Route
+              GoRoute(path: AppRoutes.tables, name: AppRoutes.tables, pageBuilder: (context, state) => const NoTransitionPage(child: TablesGridScreen())),
               GoRoute(path: AppRoutes.reports, name: AppRoutes.reports, pageBuilder: (context, state) => const NoTransitionPage(child: ReportsScreen())),
               GoRoute(path: AppRoutes.settings, name: AppRoutes.settings, pageBuilder: (context, state) => const NoTransitionPage(child: SettingsScreen())),
             ],

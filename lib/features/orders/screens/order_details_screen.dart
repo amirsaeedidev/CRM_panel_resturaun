@@ -25,7 +25,7 @@ class OrderDetailsScreen extends StatefulWidget {
 
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   final DateFormat _dateFormatter = DateFormat('yyyy-MM-dd – HH:mm');
-  final TextEditingController _deliveryTimeController = TextEditingController();
+  final TextEditingController _readyTimeController = TextEditingController();
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   void dispose() {
-    _deliveryTimeController.dispose();
+    _readyTimeController.dispose();
     super.dispose();
   }
 
@@ -46,7 +46,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     'confirmed',
     'preparing',
     'out_for_delivery',
-    'delivered'
+    'completed'
   ];
 
   int _getCurrentStep(String status) {
@@ -104,8 +104,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             );
           }
 
-          if (order.estimatedDeliveryTime != null && _deliveryTimeController.text.isEmpty) {
-            _deliveryTimeController.text = order.estimatedDeliveryTime.toString();
+          if (order.estimatedReadyMinutes != null && _readyTimeController.text.isEmpty) {
+            _readyTimeController.text = order.estimatedReadyMinutes.toString();
           }
 
           return SingleChildScrollView(
@@ -117,7 +117,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 const SizedBox(height: AppSizes.lg),
                 _buildOrderTypeInfo(context, order),
                 const SizedBox(height: AppSizes.lg),
-                _buildDeliveryTimeControl(context, provider, order),
+                _buildReadyTimeControl(context, provider, order),
                 const SizedBox(height: AppSizes.lg),
                 _buildItemsList(context, order),
                 const SizedBox(height: AppSizes.lg),
@@ -205,27 +205,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildOrderTypeInfo(BuildContext context, OrderModel order) {
-    IconData icon;
-    String title;
-    String value;
-
-    switch (order.orderType.toLowerCase()) {
-      case 'dine_in':
-        icon = Icons.restaurant;
-        title = 'Dine In';
-        value = 'Table: ${order.tableNumber ?? 'N/A'}';
-        break;
-      case 'pickup':
-        icon = Icons.takeout_dining;
-        title = 'Pickup';
-        value = 'Customer will pick up';
-        break;
-      case 'delivery':
-      default:
-        icon = Icons.delivery_dining;
-        title = 'Delivery';
-        value = order.shippingAddress ?? 'N/A';
-    }
+    IconData icon = Icons.receipt_long;
+    String title = 'Order Information';
 
     return AppCard(
       child: Column(
@@ -239,41 +220,39 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             ],
           ),
           const SizedBox(height: AppSizes.md),
-          if (order.orderType.toLowerCase() == 'delivery') ...[
-            Text('Address:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
-            Text(value, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: AppSizes.sm),
-            Text('Postal Code:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
-            Text(order.postalCode ?? 'N/A', style: Theme.of(context).textTheme.bodyMedium),
-          ] else if (order.orderType.toLowerCase() == 'dine_in') ...[
-            Text(value, style: Theme.of(context).textTheme.bodyMedium),
-          ],
-          if (order.customerNote != null && order.customerNote!.isNotEmpty) ...[
+          Text('Customer Name:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
+          Text(order.customerName, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: AppSizes.sm),
+          Text('Customer Phone:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
+          Text(order.customerPhone.isEmpty ? 'N/A' : order.customerPhone, style: Theme.of(context).textTheme.bodyMedium),
+          const SizedBox(height: AppSizes.sm),
+          Text('Order Type:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
+          Text(order.orderType.split('_').map((w) => w[0].toUpperCase() + w.substring(1)).join(' '), style: Theme.of(context).textTheme.bodyMedium),
+          
+          if (order.adminNote != null && order.adminNote!.isNotEmpty) ...[
             const Divider(height: AppSizes.lg),
-            Text('Customer Note:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error, fontWeight: FontWeight.bold)),
-            Text(order.customerNote!, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error)),
+            Text('Admin Note:', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error, fontWeight: FontWeight.bold)),
+            Text(order.adminNote!, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.error)),
           ]
         ],
       ),
     );
   }
 
-  Widget _buildDeliveryTimeControl(BuildContext context, OrdersProvider provider, OrderModel order) {
-    if (order.orderType.toLowerCase() != 'delivery') return const SizedBox.shrink();
-
+  Widget _buildReadyTimeControl(BuildContext context, OrdersProvider provider, OrderModel order) {
     return AppCard(
       child: Row(
         children: [
           Expanded(
             child: Text(
-              'Estimated Delivery Time (minutes)',
+              'Estimated Ready Time (minutes)',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
           SizedBox(
             width: 100,
             child: TextFormField(
-              controller: _deliveryTimeController,
+              controller: _readyTimeController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -284,9 +263,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           IconButton(
             icon: const Icon(Icons.save_outlined, color: AppColors.primary),
             onPressed: () {
-              final minutes = int.tryParse(_deliveryTimeController.text);
+              final minutes = int.tryParse(_readyTimeController.text);
               if (minutes != null) {
-                provider.updateEstimatedDeliveryTime(order.id, minutes);
+                // TODO: Add updateEstimatedReadyMinutes to provider if needed
+                // provider.updateEstimatedReadyMinutes(order.id, minutes);
               }
             },
           ),

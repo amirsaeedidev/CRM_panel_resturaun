@@ -1,107 +1,101 @@
 class OrderModel {
   final String id;
-  final String customerId;
+  final String userId;
   final String customerName;
-  final List<OrderItem> items;
-  final double totalAmount;
+  final String customerPhone;
+  final String orderType; // 'delivery' or 'pickup'
   final String status;
-  final String orderType; // delivery, dine_in, pickup
-  final String? tableNumber;
-  final String? shippingAddress;
-  final String? postalCode;
-  final String? customerNote;
-  final int? estimatedDeliveryTime;
+  final double totalAmount;
+  final int? estimatedReadyMinutes;
+  final String? adminNote;
+  final DateTime? completedAt;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final List<OrderItem> items;
 
   OrderModel({
     required this.id,
-    required this.customerId,
+    required this.userId,
     required this.customerName,
-    required this.items,
-    required this.totalAmount,
-    required this.status,
+    required this.customerPhone,
     required this.orderType,
-    this.tableNumber,
-    this.shippingAddress,
-    this.postalCode,
-    this.customerNote,
-    this.estimatedDeliveryTime,
+    required this.status,
+    required this.totalAmount,
+    this.estimatedReadyMinutes,
+    this.adminNote,
+    this.completedAt,
     required this.createdAt,
     this.updatedAt,
+    required this.items,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
     return OrderModel(
       id: json['id'] as String,
-      customerId: json['customer_id'] as String,
+      userId: json['user_id'] as String? ?? '',
       customerName: json['customer_name'] as String? ?? 'Unknown',
-      items: (json['items'] as List<dynamic>?)
-              ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
-              .toList() ?? [],
-      totalAmount: (json['total_amount'] as num).toDouble(),
-      status: json['status'] as String? ?? 'pending',
+      customerPhone: json['customer_phone'] as String? ?? '',
       orderType: json['order_type'] as String? ?? 'delivery',
-      tableNumber: json['table_number'] as String?,
-      shippingAddress: json['shipping_address'] as String?,
-      postalCode: json['postal_code'] as String?,
-      customerNote: json['customer_note'] as String?,
-      estimatedDeliveryTime: json['estimated_delivery_time'] as int?,
+      status: json['status'] as String? ?? 'pending',
+      totalAmount: (json['total_amount'] as num?)?.toDouble() ?? 0.0,
+      estimatedReadyMinutes: json['estimated_ready_minutes'] as int?,
+      adminNote: json['admin_note'] as String?,
+      completedAt: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      items: (json['order_items'] as List<dynamic>?)
+              ?.map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
+              .toList() ?? [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'customer_id': customerId,
+      'user_id': userId,
       'customer_name': customerName,
-      'items': items.map((e) => e.toJson()).toList(),
-      'total_amount': totalAmount,
-      'status': status,
+      'customer_phone': customerPhone,
       'order_type': orderType,
-      'table_number': tableNumber,
-      'shipping_address': shippingAddress,
-      'postal_code': postalCode,
-      'customer_note': customerNote,
-      'estimated_delivery_time': estimatedDeliveryTime,
+      'status': status,
+      'total_amount': totalAmount,
+      'estimated_ready_minutes': estimatedReadyMinutes,
+      'admin_note': adminNote,
+      'completed_at': completedAt?.toIso8601String(),
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
+      'order_items': items.map((e) => e.toJson()).toList(),
     };
   }
 
   OrderModel copyWith({
     String? id,
-    String? customerId,
+    String? userId,
     String? customerName,
-    List<OrderItem>? items,
-    double? totalAmount,
-    String? status,
+    String? customerPhone,
     String? orderType,
-    String? tableNumber,
-    String? shippingAddress,
-    String? postalCode,
-    String? customerNote,
-    int? estimatedDeliveryTime,
+    String? status,
+    double? totalAmount,
+    int? estimatedReadyMinutes,
+    String? adminNote,
+    DateTime? completedAt,
     DateTime? createdAt,
     DateTime? updatedAt,
+    List<OrderItem>? items,
   }) {
     return OrderModel(
       id: id ?? this.id,
-      customerId: customerId ?? this.customerId,
+      userId: userId ?? this.userId,
       customerName: customerName ?? this.customerName,
-      items: items ?? this.items,
-      totalAmount: totalAmount ?? this.totalAmount,
-      status: status ?? this.status,
+      customerPhone: customerPhone ?? this.customerPhone,
       orderType: orderType ?? this.orderType,
-      tableNumber: tableNumber ?? this.tableNumber,
-      shippingAddress: shippingAddress ?? this.shippingAddress,
-      postalCode: postalCode ?? this.postalCode,
-      customerNote: customerNote ?? this.customerNote,
-      estimatedDeliveryTime: estimatedDeliveryTime ?? this.estimatedDeliveryTime,
+      status: status ?? this.status,
+      totalAmount: totalAmount ?? this.totalAmount,
+      estimatedReadyMinutes: estimatedReadyMinutes ?? this.estimatedReadyMinutes,
+      adminNote: adminNote ?? this.adminNote,
+      completedAt: completedAt ?? this.completedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      items: items ?? this.items,
     );
   }
 }
