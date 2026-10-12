@@ -40,7 +40,6 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Fetch discounts for dropdown
       context.read<DiscountsProvider>().fetchDiscounts();
       
       if (isEditing) {
@@ -49,7 +48,7 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
         if (banner != null) {
           _titleController.text = banner.title;
           _priorityController.text = banner.displayOrder.toString();
-          _selectedDiscountId = banner.actionUrl; // Assuming actionUrl stores the discount ID
+          _selectedDiscountId = banner.actionUrl;
           _isActive = banner.isActive;
           setState(() {});
         }
@@ -101,8 +100,9 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
               backgroundColor: AppColors.error,
             ),
           );
+          // Fixed: Moved setState inside the mounted block to prevent lifecycle crash
+          setState(() => _isLoading = false);
         }
-        setState(() => _isLoading = false);
         return;
       }
     }
@@ -111,8 +111,9 @@ class _BannerFormScreenState extends State<BannerFormScreen> {
       'title': _titleController.text,
       'display_order': int.parse(_priorityController.text),
       'is_active': _isActive,
-      'action_url': _selectedDiscountId, // Store selected discount ID
-      'image_url': ?imageUrl,
+      'action_url': _selectedDiscountId,
+      // Fixed: Replaced invalid syntax with collection if
+      if (imageUrl != null) 'image_url': imageUrl,
     };
 
     try {
