@@ -18,49 +18,44 @@ class MainLayout extends StatelessWidget {
     final navProvider = context.watch<NavigationProvider>();
     final scaffoldKey = GlobalKey<ScaffoldState>();
 
-    // Added Directionality to force RTL layout for the whole panel
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        key: scaffoldKey,
-        drawer: isDesktop
-            ? null
-            : Drawer(
-                width: AppSizes.sidebarWidth,
-                child: const AppSidebar(),
-              ),
-        body: Row(
-          children: [
-            // Permanent Sidebar for Desktop (Will appear on the Right due to RTL)
-            if (isDesktop) const AppSidebar(),
-
-            // Main Content Area
-            Expanded(
-              child: Column(
-                children: [
-                  AppTopbar(
-                    title: navProvider.currentRoute.replaceAll('/', '').isEmpty 
-                        ? 'داشبورد' 
-                        : navProvider.currentRoute.replaceAll('/', ''),
-                    onMenuTap: () {
-                      if (!isDesktop) {
-                        scaffoldKey.currentState?.openDrawer();
-                      }
-                    },
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Theme.of(context).scaffoldBackgroundColor
-                          : Theme.of(context).scaffoldBackgroundColor,
-                      child: child,
-                    ),
-                  ),
-                ],
-              ),
+    // Directionality is now applied globally in app.dart
+    return Scaffold(
+      key: scaffoldKey,
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              width: AppSizes.sidebarWidth,
+              child: const AppSidebar(),
             ),
-          ],
-        ),
+      body: Row(
+        children: [
+          // Permanent Sidebar for Desktop (Will appear on the Right due to RTL)
+          if (isDesktop) const AppSidebar(),
+
+          // Main Content Area
+          Expanded(
+            child: Column(
+              children: [
+                AppTopbar(
+                  title: navProvider.currentRoute.replaceAll('/', '').isEmpty 
+                      ? 'داشبورد' 
+                      : navProvider.currentRoute.replaceAll('/', ''),
+                  onMenuTap: () {
+                    if (!isDesktop) {
+                      scaffoldKey.currentState?.openDrawer();
+                    }
+                  },
+                ),
+                Expanded(
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: child,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
