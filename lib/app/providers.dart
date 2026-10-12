@@ -6,6 +6,7 @@ import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
 import '../providers/settings_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/dashboard_provider.dart'; // Added DashboardProvider
 
 import '../providers/products_provider.dart';
 import '../providers/categories_provider.dart';
@@ -17,6 +18,7 @@ import '../providers/tables_provider.dart';
 import '../providers/reports_provider.dart';
 
 import '../repositories/auth_repository.dart';
+import '../repositories/dashboard_repository.dart'; // Added DashboardRepository
 import '../repositories/products_repository.dart';
 import '../repositories/categories_repository.dart';
 import '../repositories/orders_repository.dart';
@@ -25,7 +27,7 @@ import '../repositories/discounts_repository.dart';
 import '../repositories/reservations_repository.dart';
 import '../repositories/tables_repository.dart';
 import '../repositories/reports_repository.dart';
-import '../providers/notifications_provider.dart';
+
 class AppProviders {
   static List<SingleChildWidget> get providers => [
     // Core Providers
@@ -33,10 +35,10 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
     ChangeNotifierProvider(create: (_) => NavigationProvider()),
     ChangeNotifierProvider(create: (_) => SettingsProvider()),
-    ChangeNotifierProvider(create: (_) => NotificationsProvider()),
 
     // Repositories
     Provider<AuthRepository>(create: (_) => AuthRepository()),
+    Provider<DashboardRepository>(create: (_) => DashboardRepository()), // Added
     Provider<ProductsRepository>(create: (_) => ProductsRepository()),
     Provider<CategoriesRepository>(create: (_) => CategoriesRepository()),
     Provider<OrdersRepository>(create: (_) => OrdersRepository()),
@@ -49,6 +51,9 @@ class AppProviders {
     // Feature Providers
     ChangeNotifierProvider<AuthProvider>(
       create: (context) => AuthProvider(context.read<AuthRepository>()),
+    ),
+    ChangeNotifierProvider<DashboardProvider>( // Added
+      create: (context) => DashboardProvider(context.read<DashboardRepository>()),
     ),
     ChangeNotifierProvider<ProductsProvider>(
       create: (context) => ProductsProvider(context.read<ProductsRepository>()),
