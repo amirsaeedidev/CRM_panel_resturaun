@@ -4,7 +4,11 @@ import '../core/services/logger_service.dart';
 import '../models/order_model.dart';
 
 class OrdersRepository {
-  final _client = SupabaseService.client;
+  final SupabaseClient _client;
+
+  // Constructor accepts an optional client for testing, falls back to singleton
+  OrdersRepository({SupabaseClient? client}) 
+      : _client = client ?? SupabaseService.client;
 
   /// Fetches a paginated list of orders with optional search and status filter
   /// Uses 'orders_view' to get joined customer data (name & phone)
