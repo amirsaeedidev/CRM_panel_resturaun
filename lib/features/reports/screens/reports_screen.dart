@@ -1,12 +1,14 @@
-import 'package:crm_panel/core/theme/app_radius.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
+import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_loading.dart';
-import '../../../models/report_model.dart';
+//import '../../../models/report_model.dart';
+import '../../../providers/reports_provider.dart';
 import '../../../shared/widgets/empty_widget.dart';
 import '../../../shared/widgets/error_widget.dart' as app_error;
 
@@ -31,30 +33,26 @@ class _ReportsScreenState extends State<ReportsScreen> {
     });
   }
 
-  void _fetchReport() {
-    // final provider = context.read<ReportsProvider>();
-    DateTime now = DateTime.now();
-    DateTime startDate;
-    DateTime endDate = now;
-
+  (DateTime, DateTime) _getDateRange() {
+    final now = DateTime.now();
     switch (_selectedFilter) {
       case DateRangeFilter.today:
-        startDate = DateTime(now.year, now.month, now.day);
-        break;
+        return (DateTime(now.year, now.month, now.day), now);
       case DateRangeFilter.thisWeek:
-        startDate = now.subtract(Duration(days: now.weekday - 1));
-        break;
+        return (now.subtract(Duration(days: now.weekday - 1)), now);
       case DateRangeFilter.thisMonth:
-        startDate = DateTime(now.year, now.month, 1);
-        break;
+        return (DateTime(now.year, now.month, 1), now);
       case DateRangeFilter.custom:
-        if (_customDateRange == null) return;
-        startDate = _customDateRange!.start;
-        endDate = _customDateRange!.end;
-        break;
+        if (_customDateRange == null) return (DateTime(now.year, now.month, 1), now);
+        return (_customDateRange!.start, _customDateRange!.end);
     }
-    
-    // provider.fetchSalesReport(startDate: startDate, endDate: endDate);
+  }
+
+  void _fetchReport() {
+    final provider = context.read<ReportsProvider>();
+    final (startDate, endDate) = _getDateRange();
+    provider.fetchSalesReport(startDate: startDate, endDate: endDate);
+    provider.fetchTopProductsReport();
   }
 
   Future<void> _pickCustomRange() async {
@@ -92,7 +90,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Text(
             'Reports & Analytics',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -102,12 +99,127 @@ class _ReportsScreenState extends State<ReportsScreen> {
           ),
           const SizedBox(height: AppSizes.lg),
 
-          // Date Filter Chips
           _buildDateFilters(),
           const SizedBox(height: AppSizes.lg),
 
-          // Content - Using dummy state for structure. Replace with Selector<ReportsProvider, ReportModel>
-          _buildReportContent(context),
+          Consumer<ReportsProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading && provider.salesReport == null) {
+                return const Center(child: AppLoading(size: 40));
+              }
+
+              if (provider.error != null && provider.salesReport == null) {
+                return app_error.AppErrorWidget(
+                  message: provider.error!,
+                  onRetry: _fetchReport,
+                );
+              }
+
+              final report = provider.salesReport;
+              final topProducts = provider.topProductsReport?.chartData ?? [];
+
+              if (report == null && topProducts.isEmpty) {
+                return const EmptyWidget(
+                  title: 'No Data Available',
+                  message: 'Select a date range to view reports.',
+                  icon: Icons.bar_chart_outlined,
+                );
+              }
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      bool isMobile = constraints.maxWidth < 600;
+                      return Flex(
+                        direction: isMobile ? Axis.vertical : Axis.horizontal,
+                        children: [
+                          Expanded(child: _buildSummaryCard(context, 'Delivery Revenue', '15,200,000 T', AppColors.primary)),
+                          SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
+                          Expanded(child: _buildSummaryCard(context, 'Dine In Revenue', '8,500,000 T', AppColors.secondary)),
+                          SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
+                          Expanded(child: _buildSummaryCard(context, 'Total Discounts Given', '1,200,000 T', AppColors.error)),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: AppSizes.lg),
+
+                  AppCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Revenue Distribution',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: AppSizes.xl),
+                        SizedBox(
+                          height: 250,
+                          child: PieChart(
+                            PieChartData(
+                              sectionsSpace: 2,
+                              centerSpaceRadius: 40,
+                              sections: [
+                                PieChartSectionData(
+                                  color: AppColors.primary,
+                                  value: 64,
+                                  title: '64%',
+                                  radius: 50,
+                                  titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                PieChartSectionData(
+                                  color: AppColors.secondary,
+                                  value: 36,
+                                  title: '36%',
+                                  radius: 50,
+                                  titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSizes.md),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildLegend(context, AppColors.primary, 'Delivery'),
+                            const SizedBox(width: AppSizes.lg),
+                            _buildLegend(context, AppColors.secondary, 'Dine In'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.lg),
+
+                  AppCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Top 10 Best Sellers',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        const Divider(height: AppSizes.lg),
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: topProducts.length,
+                          separatorBuilder: (context, index) => const Divider(),
+                          itemBuilder: (context, index) {
+                            final product = topProducts[index];
+                            return _buildTopProductRow(context, product);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
@@ -156,129 +268,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
   }
 
-  // Dummy state for UI structure
-  Widget _buildReportContent(BuildContext context) {
-    final bool isLoading = false; // provider.isLoading
-    final String? error = null; // provider.error
-    final ReportModel? report = null; // provider.report
-    final List<Map<String, dynamic>> topProducts = []; // provider.topProducts
-
-    if (isLoading) {
-      return const Center(child: AppLoading(size: 40));
-    }
-
-    if (error != null) {
-      return app_error.AppErrorWidget(
-        message: error,
-        onRetry: _fetchReport,
-      );
-    }
-
-    if (report == null && topProducts.isEmpty) {
-      return const EmptyWidget(
-        title: 'No Data Available',
-        message: 'Select a date range to view reports.',
-        icon: Icons.bar_chart_outlined,
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Summary Cards
-        LayoutBuilder(
-          builder: (context, constraints) {
-            bool isMobile = constraints.maxWidth < 600;
-            return Flex(
-              direction: isMobile ? Axis.vertical : Axis.horizontal,
-              children: [
-                Expanded(child: _buildSummaryCard(context, 'Delivery Revenue', '15,200,000 T', AppColors.primary)),
-                SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
-                Expanded(child: _buildSummaryCard(context, 'Dine In Revenue', '8,500,000 T', AppColors.secondary)),
-                SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
-                Expanded(child: _buildSummaryCard(context, 'Total Discounts Given', '1,200,000 T', AppColors.error)),
-              ],
-            );
-          },
-        ),
-        const SizedBox(height: AppSizes.lg),
-
-        // Revenue Pie Chart
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Revenue Distribution',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppSizes.xl),
-              SizedBox(
-                height: 250,
-                child: PieChart(
-                  PieChartData(
-                    sectionsSpace: 2,
-                    centerSpaceRadius: 40,
-                    sections: [
-                      PieChartSectionData(
-                        color: AppColors.primary,
-                        value: 64,
-                        title: '64%',
-                        radius: 50,
-                        titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      PieChartSectionData(
-                        color: AppColors.secondary,
-                        value: 36,
-                        title: '36%',
-                        radius: 50,
-                        titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppSizes.md),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildLegend(context, AppColors.primary, 'Delivery'),
-                  const SizedBox(width: AppSizes.lg),
-                  _buildLegend(context, AppColors.secondary, 'Dine In'),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSizes.lg),
-
-        // Top 10 Best Sellers
-        AppCard(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Top 10 Best Sellers',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const Divider(height: AppSizes.lg),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: topProducts.length,
-                separatorBuilder: (context, index) => const Divider(),
-                itemBuilder: (context, index) {
-                  final product = topProducts[index];
-                  return _buildTopProductRow(context, product);
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSummaryCard(BuildContext context, String title, String value, Color color) {
     return AppCard(
       child: Row(
@@ -286,7 +275,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
           Container(
             padding: const EdgeInsets.all(AppSizes.md),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppRadius.medium),
             ),
             child: Icon(Icons.attach_money, color: color),
@@ -331,7 +320,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Widget _buildTopProductRow(BuildContext context, Map<String, dynamic> product) {
-    // Dummy structure
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
       child: Row(
