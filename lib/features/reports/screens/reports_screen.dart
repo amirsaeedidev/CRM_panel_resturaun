@@ -7,7 +7,6 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/widgets/app_card.dart';
 import '../../../core/widgets/app_loading.dart';
-//import '../../../models/report_model.dart';
 import '../../../providers/reports_provider.dart';
 import '../../../shared/widgets/empty_widget.dart';
 import '../../../shared/widgets/error_widget.dart' as app_error;
@@ -74,6 +73,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
       },
     );
 
+    // Fixed: Check if mounted before using context or setState after async gap
+    if (!mounted) return;
+
     if (picked != null) {
       setState(() {
         _customDateRange = picked;
@@ -91,7 +93,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Reports & Analytics',
+            'گزارش‌ها و آمار',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.getPrimaryText(context),
@@ -120,8 +122,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
               if (report == null && topProducts.isEmpty) {
                 return const EmptyWidget(
-                  title: 'No Data Available',
-                  message: 'Select a date range to view reports.',
+                  title: 'داده‌ای موجود نیست',
+                  message: 'برای مشاهده گزارش‌ها یک بازه زمانی انتخاب کنید.',
                   icon: Icons.bar_chart_outlined,
                 );
               }
@@ -135,11 +137,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       return Flex(
                         direction: isMobile ? Axis.vertical : Axis.horizontal,
                         children: [
-                          Expanded(child: _buildSummaryCard(context, 'Delivery Revenue', '15,200,000 T', AppColors.primary)),
+                          Expanded(child: _buildSummaryCard(context, 'درآمد ارسال', '۱۵,۲۰۰,۰۰۰ ت', AppColors.primary)),
                           SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
-                          Expanded(child: _buildSummaryCard(context, 'Dine In Revenue', '8,500,000 T', AppColors.secondary)),
+                          Expanded(child: _buildSummaryCard(context, 'درآمد سالن', '۸,۵۰۰,۰۰۰ ت', AppColors.secondary)),
                           SizedBox(width: isMobile ? 0 : AppSizes.md, height: isMobile ? AppSizes.md : 0),
-                          Expanded(child: _buildSummaryCard(context, 'Total Discounts Given', '1,200,000 T', AppColors.error)),
+                          Expanded(child: _buildSummaryCard(context, 'مجموع تخفیف‌ها', '۱,۲۰۰,۰۰۰ ت', AppColors.error)),
                         ],
                       );
                     },
@@ -151,7 +153,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Revenue Distribution',
+                          'توزیع درآمد',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: AppSizes.xl),
@@ -165,14 +167,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 PieChartSectionData(
                                   color: AppColors.primary,
                                   value: 64,
-                                  title: '64%',
+                                  title: '۶۴٪',
                                   radius: 50,
                                   titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 ),
                                 PieChartSectionData(
                                   color: AppColors.secondary,
                                   value: 36,
-                                  title: '36%',
+                                  title: '۳۶٪',
                                   radius: 50,
                                   titleStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 ),
@@ -184,9 +186,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _buildLegend(context, AppColors.primary, 'Delivery'),
+                            _buildLegend(context, AppColors.primary, 'ارسال'),
                             const SizedBox(width: AppSizes.lg),
-                            _buildLegend(context, AppColors.secondary, 'Dine In'),
+                            _buildLegend(context, AppColors.secondary, 'سالن'),
                           ],
                         ),
                       ],
@@ -199,7 +201,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Top 10 Best Sellers',
+                          '۱۰ محصول پرفروش',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const Divider(height: AppSizes.lg),
@@ -229,14 +231,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return Wrap(
       spacing: AppSizes.sm,
       children: [
-        _buildFilterChip('Today', DateRangeFilter.today),
-        _buildFilterChip('This Week', DateRangeFilter.thisWeek),
-        _buildFilterChip('This Month', DateRangeFilter.thisMonth),
+        _buildFilterChip('امروز', DateRangeFilter.today),
+        _buildFilterChip('این هفته', DateRangeFilter.thisWeek),
+        _buildFilterChip('این ماه', DateRangeFilter.thisMonth),
         ActionChip(
           label: Text(
             _customDateRange != null 
-                ? 'Custom: ${_customDateRange!.start.day}/${_customDateRange!.start.month} - ${_customDateRange!.end.day}/${_customDateRange!.end.month}'
-                : 'Custom Range',
+                ? 'دلخواه: ${_customDateRange!.start.day}/${_customDateRange!.start.month} - ${_customDateRange!.end.day}/${_customDateRange!.end.month}'
+                : 'بازه دلخواه',
             style: TextStyle(
               color: _selectedFilter == DateRangeFilter.custom ? Colors.white : AppColors.getPrimaryText(context),
             ),
@@ -335,13 +337,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Product Name', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                Text('${product['sold'] ?? 120} units sold', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
+                Text('نام محصول', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text('${product['sold'] ?? 120} عدد فروخته شد', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.getSecondaryText(context))),
               ],
             ),
           ),
           Text(
-            '${product['revenue'] ?? '1,500,000'} T',
+            '${product['revenue'] ?? '۱,۵۰۰,۰۰۰'} ت',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
         ],
