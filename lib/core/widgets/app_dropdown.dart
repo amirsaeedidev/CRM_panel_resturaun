@@ -41,7 +41,7 @@ class AppDropdown<T> extends StatelessWidget {
         ),
         hintText: hintText,
         hintStyle: AppTypography.bodyMedium.copyWith(
-          color: AppColors.getSecondaryText(context).withOpacity(0.6),
+          color: AppColors.getSecondaryText(context).withValues(alpha: 0.6),
         ),
         prefixIcon: prefixIcon,
         filled: true,
