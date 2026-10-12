@@ -31,7 +31,8 @@ class NavigationItem extends StatelessWidget {
             vertical: AppSizes.sm,
           ),
           decoration: BoxDecoration(
-            color: isActive ? AppColors.primary.withOpacity(0.15) : Colors.transparent,
+            // Fixed: Replaced deprecated withOpacity with withValues
+            color: isActive ? AppColors.primary.withValues(alpha: 0.15) : Colors.transparent,
             borderRadius: BorderRadius.circular(AppRadius.medium),
           ),
           child: Row(
