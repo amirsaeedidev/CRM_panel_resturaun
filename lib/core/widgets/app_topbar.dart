@@ -30,7 +30,6 @@ class AppTopbar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Menu Button (For Mobile/Tablet)
           IconButton(
             icon: const Icon(Icons.menu),
             onPressed: onMenuTap,
@@ -38,7 +37,6 @@ class AppTopbar extends StatelessWidget {
           ),
           const SizedBox(width: AppSizes.sm),
           
-          // Page Title
           Text(
             title,
             style: AppTypography.titleLarge.copyWith(
@@ -49,12 +47,11 @@ class AppTopbar extends StatelessWidget {
           
           const Spacer(),
           
-          // Search Field (Responsive)
           Expanded(
             flex: 2,
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search...',
+                hintText: 'جستجو...',
                 hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.getSecondaryText(context)),
                 prefixIcon: Icon(Icons.search, color: AppColors.getSecondaryText(context), size: AppSizes.iconSm),
                 filled: true,
@@ -69,10 +66,8 @@ class AppTopbar extends StatelessWidget {
           ),
           const Spacer(flex: 3),
           
-          // Notification Bell with Selector
           _buildNotificationBell(context),
           
-          // Dark Mode Toggle Button
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, child) {
               return IconButton(
@@ -98,7 +93,6 @@ class AppTopbar extends StatelessWidget {
   }
 
   Widget _buildNotificationBell(BuildContext context) {
-    // Using Selector to only rebuild the bell icon when unreadCount changes
     return Selector<NotificationsProvider, int>(
       selector: (context, provider) => provider.unreadCount,
       builder: (context, unreadCount, child) {
@@ -122,7 +116,7 @@ class AppTopbar extends StatelessWidget {
                       minHeight: 16,
                     ),
                     child: Text(
-                      unreadCount > 9 ? '9+' : unreadCount.toString(),
+                      unreadCount > 9 ? '۹+' : unreadCount.toString(),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -162,7 +156,7 @@ class AppTopbar extends StatelessWidget {
               children: [
                 Icon(Icons.notifications_off_outlined, size: 40, color: AppColors.getSecondaryText(context)),
                 const SizedBox(height: AppSizes.sm),
-                Text('No new notifications', style: Theme.of(context).textTheme.bodyMedium),
+                Text('اعلان جدیدی وجود ندارد', style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -174,14 +168,13 @@ class AppTopbar extends StatelessWidget {
       PopupMenuItem<String>(
         enabled: false,
         child: Text(
-          'Notifications',
+          'اعلان‌ها',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
       ),
       const PopupMenuDivider(),
     ];
 
-    // Add up to 5 recent notifications
     for (var notif in provider.notifications.take(5)) {
       items.add(
         PopupMenuItem<String>(
@@ -198,7 +191,7 @@ class AppTopbar extends StatelessWidget {
         value: 'mark_all_read',
         child: Center(
           child: Text(
-            'Mark all as read',
+            'علامت‌گذاری همه به عنوان خوانده شده',
             style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
           ),
         ),
@@ -209,59 +202,54 @@ class AppTopbar extends StatelessWidget {
   }
 
   Widget _buildNotificationItem(BuildContext context, NotificationModel notif) {
-    return InkWell(
-      onTap: () {
-        // Handle notification tap
-      },
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSizes.sm),
+            decoration: BoxDecoration(
+              color: _getNotifColor(notif.type).withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(_getNotifIcon(notif.type), color: _getNotifColor(notif.type), size: 16),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  notif.title,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: notif.isRead ? FontWeight.normal : FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  notif.description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.getSecondaryText(context),
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (!notif.isRead)
             Container(
-              padding: const EdgeInsets.all(AppSizes.sm),
-              decoration: BoxDecoration(
-                color: _getNotifColor(notif.type).withOpacity(0.1),
+              width: 8,
+              height: 8,
+              margin: const EdgeInsets.only(top: 4),
+              decoration: const BoxDecoration(
+                color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
-              child: Icon(_getNotifIcon(notif.type), color: _getNotifColor(notif.type), size: 16),
             ),
-            const SizedBox(width: AppSizes.sm),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    notif.title,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: notif.isRead ? FontWeight.normal : FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    notif.description,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.getSecondaryText(context),
-                        ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            if (!notif.isRead)
-              Container(
-                width: 8,
-                height: 8,
-                margin: const EdgeInsets.only(top: 4),
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
