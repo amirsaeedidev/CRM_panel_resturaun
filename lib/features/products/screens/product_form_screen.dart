@@ -58,7 +58,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           _selectedCategory = product.categoryId;
           _isPopular = product.isPopular;
           _isAvailable = product.status == 'active';
-          // _selectedImage = product.imageUrl; // Can't assign String to File directly
           setState(() {});
         }
       });
@@ -152,6 +151,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         await provider.createProduct(productData);
       }
 
+      // Fixed: Check if mounted before using BuildContext after async gap
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -162,6 +162,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         Navigator.of(context).pop();
       }
     } catch (e) {
+      // Fixed: Check if mounted before using BuildContext after async gap
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -171,6 +172,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         );
       }
     } finally {
+      // Fixed: Check if mounted before using setState after async gap
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -329,14 +331,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                       title: const Text('Available for Customers'),
                       subtitle: const Text('If disabled, product will not be shown in the menu'),
                       value: _isAvailable,
-                      activeThumbColor: AppColors.primary,
+                      activeColor: AppColors.primary,
                       onChanged: (val) => setState(() => _isAvailable = val),
                     ),
                     SwitchListTile(
                       title: const Text('Show in Popular Products'),
                       subtitle: const Text('Highlight this product on the dashboard'),
                       value: _isPopular,
-                      activeThumbColor: AppColors.primary,
+                      activeColor: AppColors.primary,
                       onChanged: (val) => setState(() => _isPopular = val),
                     ),
                   ],
