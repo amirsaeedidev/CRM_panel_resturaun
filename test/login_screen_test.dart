@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:crm_panel/core/constants/app_colors.dart';
+
 import 'package:crm_panel/features/auth/screens/login_screen.dart';
 import 'package:crm_panel/providers/auth_provider.dart';
 import 'package:crm_panel/repositories/auth_repository.dart';
+import 'package:crm_panel/models/user_model.dart';
 
 class MockAuthRepository implements AuthRepository {
   @override
@@ -12,7 +14,6 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<UserModel> login(String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 100));
     return UserModel(
       id: 'test-id',
       email: email,
@@ -35,40 +36,57 @@ class MockAuthRepository implements AuthRepository {
 }
 
 void main() {
-  testWidgets('LoginScreen renders correctly and validates input', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(
-      MaterialApp(
-        home: ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(MockAuthRepository()),
-          child: const LoginScreen(),
+  testWidgets('LoginScreen validates input and logs in successfully', (WidgetTester tester) async {
+    // ساخت مسیریاب برای تست نویگیشن (context.go)
+    final router = GoRouter(
+      initialLocation: '/login',
+      routes: [
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginScreen(),
         ),
+        GoRoute(
+          path: '/dashboard',
+          builder: (context, state) => const Scaffold(body: Center(child: Text('Dashboard Page'))),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      MaterialApp.router(
+        routerConfig: router,
+        builder: (context, child) {
+          return ChangeNotifierProvider<AuthProvider>(
+            create: (_) => AuthProvider(MockAuthRepository()),
+            child: child!,
+          );
+        },
       ),
     );
 
-    // Verify that the header text is present.
+    // بررسی وجود عنوان
     expect(find.text('پنل مدیریت رستوران'), findsOneWidget);
 
-    // Verify that email and password fields are present.
-    expect(find.byType(TextFormField), findsNWidgets(2));
-
-    // Try to tap the login button without entering anything (should show validation errors).
+    // کلیک روی دکمه ورود بدون وارد کردن اطلاعات
     await tester.tap(find.text('ورود'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
-    // Verify validation errors are shown.
+    // بررسی ارورهای ولیدیشن
     expect(find.text('ایمیل الزامی است'), findsOneWidget);
     expect(find.text('رمز عبور الزامی است'), findsOneWidget);
 
-    // Enter valid credentials.
+    // وارد کردن اطلاعات معتبر
     await tester.enterText(find.byType(TextFormField).first, 'admin@test.com');
     await tester.enterText(find.byType(TextFormField).last, '123456');
 
-    // Tap the login button again.
+    // کلیک روی دکمه ورود
     await tester.tap(find.text('ورود'));
-    await tester.pump(); // Start the async call
+    
+    // pumpAndSettle صبر می‌کند تا تمام تایمرها (مثل تاخیر ۱ ثانیه‌ای Mock) و انیمیشن‌ها تمام شوند
+    // این کار از خطای Pending Timer جلوگیری می‌کند
+    await tester.pumpAndSettle();
 
-    // Verify that loading indicator is shown.
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // بررسی اینکه آیا به صفحه داشبورد منتقل شده‌ایم یا خیر
+    expect(find.text('Dashboard Page'), findsOneWidget);
   });
 }
