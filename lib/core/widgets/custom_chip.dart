@@ -22,12 +22,12 @@ class CustomChip extends StatelessWidget {
 
   Color _getBackgroundColor() {
     switch (type) {
-      case ChipType.primary: return AppColors.primary.withOpacity(0.1);
-      case ChipType.success: return AppColors.success.withOpacity(0.1);
-      case ChipType.warning: return AppColors.warning.withOpacity(0.1);
-      case ChipType.error: return AppColors.error.withOpacity(0.1);
-      case ChipType.info: return AppColors.info.withOpacity(0.1);
-      case ChipType.neutral: return AppColors.borderLight.withOpacity(0.5);
+      case ChipType.primary: return AppColors.primary.withValues(alpha: 0.1);
+      case ChipType.success: return AppColors.success.withValues(alpha: 0.1);
+      case ChipType.warning: return AppColors.warning.withValues(alpha: 0.1);
+      case ChipType.error: return AppColors.error.withValues(alpha: 0.1);
+      case ChipType.info: return AppColors.info.withValues(alpha: 0.1);
+      case ChipType.neutral: return AppColors.borderLight.withValues(alpha: 0.5);
     }
   }
 
