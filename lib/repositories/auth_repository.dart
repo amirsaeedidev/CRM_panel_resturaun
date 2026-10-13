@@ -10,7 +10,7 @@ class AuthRepository {
   UserModel? getCurrentUser() {
     final session = _auth.currentSession;
     if (session?.user != null) {
-      return _mapToUserModel(session!.user);
+      return _mapToUserModel(session!.user!);
     }
     return null;
   }
@@ -35,6 +35,29 @@ class AuthRepository {
     } catch (e, st) {
       LoggerService.error('Unexpected login error', error: e, stackTrace: st);
       throw Exception('خطای ناشناخته در زمان ورود');
+    }
+  }
+
+  /// Register a new user with email and password
+  Future<UserModel> signUp(String email, String password) async {
+    try {
+      final response = await _auth.signUp(
+        email: email,
+        password: password,
+      );
+      
+      if (response.user == null) {
+        throw Exception('ثبت‌نام ناموفق بود. لطفاً دوباره تلاش کنید.');
+      }
+      
+      LoggerService.info('User registered: ${response.user!.id}');
+      return _mapToUserModel(response.user!);
+    } on AuthException catch (e) {
+      LoggerService.error('AuthException during sign up', error: e);
+      throw Exception(e.message);
+    } catch (e, st) {
+      LoggerService.error('Unexpected sign up error', error: e, stackTrace: st);
+      throw Exception('خطای ناشناخته در زمان ثبت‌نام');
     }
   }
 
