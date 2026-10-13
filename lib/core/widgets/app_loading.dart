@@ -22,7 +22,6 @@ class AppLoading extends StatelessWidget {
   }
 }
 
-// Full screen loading overlay
 class AppFullScreenLoading extends StatelessWidget {
   final bool isLoading;
   final Widget child;
@@ -40,7 +39,8 @@ class AppFullScreenLoading extends StatelessWidget {
         child,
         if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),
+            // Fixed: Replaced deprecated withOpacity with withValues
+            color: Colors.black.withValues(alpha: 0.5),
             child: Center(
               child: AppLoading(size: AppSizes.iconXl, color: Colors.white),
             ),
