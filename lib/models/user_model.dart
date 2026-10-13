@@ -6,6 +6,7 @@ class UserModel {
   final String? phone;
   final String? avatarUrl;
   final String role;
+  final String status;
   final DateTime createdAt;
 
   UserModel({
@@ -15,29 +16,53 @@ class UserModel {
     this.lastName,
     this.phone,
     this.avatarUrl,
-    required this.role,
+    this.role = 'customer',
+    this.status = 'active',
     required this.createdAt,
   });
 
+  /// An active admin account can access admin UI.
+  /// Real data access must still be protected by Supabase RLS.
+  bool get isAdmin => role == 'admin' && status == 'active';
+
+  bool get isActive => status == 'active';
+
   String get fullName {
-    if (firstName != null && lastName != null) {
-      return '$firstName $lastName';
-    } else if (firstName != null) {
-      return firstName!;
+    final first = firstName?.trim();
+    final last = lastName?.trim();
+
+    if (first != null &&
+        first.isNotEmpty &&
+        last != null &&
+        last.isNotEmpty) {
+      return '$first $last';
     }
+
+    if (first != null && first.isNotEmpty) {
+      return first;
+    }
+
+    if (last != null && last.isNotEmpty) {
+      return last;
+    }
+
     return email;
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String? ?? '',
       firstName: json['first_name'] as String?,
       lastName: json['last_name'] as String?,
       phone: json['phone'] as String?,
       avatarUrl: json['avatar_url'] as String?,
-      role: json['role'] as String? ?? 'user',
-      createdAt: DateTime.parse(json['created_at'] as String),
+      role: json['role'] as String? ?? 'customer',
+      status: json['status'] as String? ?? 'active',
+      createdAt: DateTime.tryParse(
+            json['created_at'] as String? ?? '',
+          ) ??
+          DateTime.now(),
     );
   }
 
@@ -50,6 +75,7 @@ class UserModel {
       'phone': phone,
       'avatar_url': avatarUrl,
       'role': role,
+      'status': status,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -62,6 +88,7 @@ class UserModel {
     String? phone,
     String? avatarUrl,
     String? role,
+    String? status,
     DateTime? createdAt,
   }) {
     return UserModel(
@@ -72,6 +99,7 @@ class UserModel {
       phone: phone ?? this.phone,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       role: role ?? this.role,
+      status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
     );
   }
