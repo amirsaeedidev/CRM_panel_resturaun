@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/widgets/app_loading.dart';
-//import '../../../core/widgets/app_card.dart';
 import '../../../shared/widgets/empty_widget.dart';
 import '../../../shared/widgets/error_widget.dart' as app_error;
 import '../../../providers/dashboard_provider.dart';
@@ -24,100 +23,136 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
       context.read<DashboardProvider>().fetchDashboardData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isMobile = constraints.maxWidth < 768;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(AppSizes.md),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // This width already accounts for the horizontal padding above.
+          final contentWidth = constraints.maxWidth;
 
-        return Consumer<DashboardProvider>(
-          builder: (context, provider, child) {
-            if (provider.isLoading && provider.statistics == null) {
-              return const Center(child: AppLoading());
-            }
+          // Adapt card columns to the actual available content width.
+          final int cardColumns;
+          if (contentWidth >= 1050) {
+            cardColumns = 3;
+          } else if (contentWidth >= 620) {
+            cardColumns = 2;
+          } else {
+            cardColumns = 1;
+          }
 
-            if (provider.error != null && provider.statistics == null) {
-              return app_error.AppErrorWidget(
-                message: provider.error!,
-                onRetry: () => provider.fetchDashboardData(),
-              );
-            }
+          final cardWidth =
+              (contentWidth - AppSizes.md * (cardColumns - 1)) / cardColumns;
 
-            final stats = provider.statistics;
+          // Stack charts before they become cramped.
+          final stackCharts = contentWidth < 900;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSizes.md),
-              child: Column(
+          return Consumer<DashboardProvider>(
+            builder: (context, provider, child) {
+              final stats = provider.statistics;
+
+              if (provider.isLoading && stats == null) {
+                return const SizedBox(
+                  height: 300,
+                  child: Center(child: AppLoading()),
+                );
+              }
+
+              // This is a real data-loading error, not a layout placeholder.
+              if (provider.error != null && stats == null) {
+                return app_error.AppErrorWidget(
+                  message: provider.error!,
+                  onRetry: () => provider.fetchDashboardData(),
+                );
+              }
+
+              return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Welcome back!',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          color: AppColors.getPrimaryText(context),
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: AppColors.getPrimaryText(context),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: AppSizes.sm),
+
                   Text(
-                    'Here is a summary of your store performance over the last 30 days.',
+                    'Here is a summary of your store performance '
+                    'over the last 30 days.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.getSecondaryText(context),
-                        ),
+                      color: AppColors.getSecondaryText(context),
+                    ),
                   ),
                   const SizedBox(height: AppSizes.lg),
 
-                  // Statistics Cards
+                  // Responsive statistic cards.
                   Wrap(
                     spacing: AppSizes.md,
                     runSpacing: AppSizes.md,
                     children: [
                       _buildStatCard(
-                        context: context,
-                        width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
+                        width: cardWidth,
                         title: 'Total Sales',
-                        value: stats != null ? '${stats.totalSales.toStringAsFixed(0)} T' : 'N/A',
+                        value: stats != null
+                            ? '${stats.totalSales.toStringAsFixed(0)} T'
+                            : 'N/A',
                         icon: Icons.attach_money,
                         iconColor: AppColors.success,
-                        changePercentage: stats != null ? stats.salesGrowthPercentage.toStringAsFixed(1) : '0',
+                        changePercentage: stats != null
+                            ? stats.salesGrowthPercentage.toStringAsFixed(1)
+                            : '0',
                       ),
                       _buildStatCard(
-                        context: context,
-                        width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
+                        width: cardWidth,
                         title: 'New Orders',
-                        value: stats != null ? stats.totalOrders.toString() : 'N/A',
+                        value: stats != null
+                            ? stats.totalOrders.toString()
+                            : 'N/A',
                         icon: Icons.shopping_cart_checkout,
                         iconColor: AppColors.primary,
-                        changePercentage: stats != null ? stats.ordersGrowthPercentage.toStringAsFixed(1) : '0',
+                        changePercentage: stats != null
+                            ? stats.ordersGrowthPercentage.toStringAsFixed(1)
+                            : '0',
                       ),
                       _buildStatCard(
-                        context: context,
-                        width: isMobile ? constraints.maxWidth : (constraints.maxWidth - AppSizes.md * 2) / 3,
+                        width: cardWidth,
                         title: 'Active Users',
-                        value: stats != null ? stats.totalCustomers.toString() : 'N/A',
+                        value: stats != null
+                            ? stats.totalCustomers.toString()
+                            : 'N/A',
                         icon: Icons.people_alt_outlined,
                         iconColor: AppColors.accent,
-                        changePercentage: stats != null ? stats.customersGrowthPercentage.toStringAsFixed(1) : '0',
+                        changePercentage: stats != null
+                            ? stats.customersGrowthPercentage.toStringAsFixed(1)
+                            : '0',
                       ),
                     ],
                   ),
+
                   const SizedBox(height: AppSizes.lg),
 
-                  // Charts Section
-                  if (isMobile)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        SizedBox(width: double.infinity, child: SalesChart()),
-                        SizedBox(height: AppSizes.md),
-                        SizedBox(width: double.infinity, child: CategoryPieChart()),
-                      ],
-                    )
-                  else
+                  // Responsive charts.
+                  if (stackCharts) ...[
+                    const SizedBox(width: double.infinity, child: SalesChart()),
+                    const SizedBox(height: AppSizes.md),
+                    const SizedBox(
+                      width: double.infinity,
+                      child: CategoryPieChart(),
+                    ),
+                  ] else ...[
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
@@ -126,10 +161,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Expanded(flex: 1, child: CategoryPieChart()),
                       ],
                     ),
+                  ],
+
                   const SizedBox(height: AppSizes.lg),
 
-                  // Recent Orders List
-                  if (provider.recentOrders.isEmpty && !provider.isLoading)
+                  // Recent orders.
+                  Text(
+                    'Recent Orders',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: AppColors.getPrimaryText(context),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.md),
+
+                  if (provider.recentOrders.isEmpty && provider.isLoading)
+                    const SizedBox(
+                      height: 120,
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (provider.recentOrders.isEmpty)
                     const EmptyWidget(
                       title: 'No Recent Orders',
                       message: 'There are no recent orders to display.',
@@ -138,16 +189,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   else
                     const RecentOrdersList(),
                 ],
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
   Widget _buildStatCard({
-    required BuildContext context,
     required double width,
     required String title,
     required String value,
