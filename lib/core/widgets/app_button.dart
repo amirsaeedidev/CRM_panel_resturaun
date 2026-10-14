@@ -37,23 +37,28 @@ class AppButton extends StatelessWidget {
 
     switch (type) {
       case AppButtonType.primary:
-        backgroundColor = isDisabled ? AppColors.primary.withOpacity(0.5) : AppColors.primary;
+        // Fixed: Replaced deprecated withOpacity with withValues
+        backgroundColor = isDisabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary;
         foregroundColor = Colors.white;
         borderColor = Colors.transparent;
         break;
       case AppButtonType.secondary:
-        backgroundColor = isDisabled ? AppColors.secondary.withOpacity(0.5) : AppColors.secondary;
+        // Fixed: Replaced deprecated withOpacity with withValues
+        backgroundColor = isDisabled ? AppColors.secondary.withValues(alpha: 0.5) : AppColors.secondary;
         foregroundColor = Colors.white;
         borderColor = Colors.transparent;
         break;
       case AppButtonType.outline:
         backgroundColor = Colors.transparent;
-        foregroundColor = isDisabled ? AppColors.primary.withOpacity(0.5) : AppColors.primary;
-        borderColor = isDisabled ? AppColors.primary.withOpacity(0.5) : AppColors.primary;
+        // Fixed: Replaced deprecated withOpacity with withValues
+        foregroundColor = isDisabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary;
+        // Fixed: Replaced deprecated withOpacity with withValues
+        borderColor = isDisabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary;
         break;
       case AppButtonType.text:
         backgroundColor = Colors.transparent;
-        foregroundColor = isDisabled ? AppColors.primary.withOpacity(0.5) : AppColors.primary;
+        // Fixed: Replaced deprecated withOpacity with withValues
+        foregroundColor = isDisabled ? AppColors.primary.withValues(alpha: 0.5) : AppColors.primary;
         borderColor = Colors.transparent;
         break;
     }

@@ -1,4 +1,4 @@
-/// مدل‌های گزارش فروش رستوران
+// مدل‌های گزارش فروش رستوران
 
 enum AnalyticsPeriod { daily, weekly, yearly }
 
