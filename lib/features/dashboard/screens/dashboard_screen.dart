@@ -175,10 +175,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: AppSizes.md),
 
-                  if (provider.recentOrders.isEmpty && provider.isLoading)
+                  // Recent Orders List
+                  if (provider.recentOrdersError != null &&
+                      provider.recentOrders.isEmpty &&
+                      !provider.isLoading)
+                    app_error.AppErrorWidget(
+                      message: provider.recentOrdersError!,
+                      onRetry: () => provider.fetchDashboardData(),
+                    )
+                  else if (provider.recentOrders.isEmpty && provider.isLoading)
                     const SizedBox(
                       height: 120,
-                      child: Center(child: CircularProgressIndicator()),
+                      child: Center(child: AppLoading()),
                     )
                   else if (provider.recentOrders.isEmpty)
                     const EmptyWidget(
