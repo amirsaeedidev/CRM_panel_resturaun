@@ -11,6 +11,36 @@ class MainLayout extends StatelessWidget {
 
   const MainLayout({super.key, required this.child});
 
+  // متد کمکی برای تبدیل مسیر (Route) به عنوان فارسی برای تاپ‌بار
+  String _getPageTitle(String route) {
+    switch (route) {
+      case '/dashboard':
+        return 'داشبورد';
+      case '/orders':
+        return 'سفارشات';
+      case '/products':
+        return 'محصولات';
+      case '/customers':
+        return 'مشتریان';
+      case '/categories':
+        return 'دسته‌بندی‌ها';
+      case '/banners':
+        return 'بنرها';
+      case '/discounts':
+        return 'تخفیف‌ها';
+      case '/reports':
+        return 'گزارش‌ها';
+      case '/settings':
+        return 'تنظیمات';
+      case '/reservations':
+        return 'رزروها';
+      case '/tables':
+        return 'میزها';
+      default:
+        return 'داشبورد';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -37,9 +67,8 @@ class MainLayout extends StatelessWidget {
             child: Column(
               children: [
                 AppTopbar(
-                  title: navProvider.currentRoute.replaceAll('/', '').isEmpty 
-                      ? 'داشبورد' 
-                      : navProvider.currentRoute.replaceAll('/', ''),
+                  // استفاده از متد تبدیل مسیر به فارسی
+                  title: _getPageTitle(navProvider.currentRoute),
                   onMenuTap: () {
                     if (!isDesktop) {
                       scaffoldKey.currentState?.openDrawer();
