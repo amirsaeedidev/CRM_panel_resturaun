@@ -29,8 +29,7 @@ class DashboardProvider extends ChangeNotifier {
 
   StatisticsModel? get statistics => _statistics;
 
-  List<OrderModel> get recentOrders =>
-      List.unmodifiable(_recentOrders);
+  List<OrderModel> get recentOrders => List.unmodifiable(_recentOrders);
 
   /// Fetch statistics and recent orders concurrently.
   ///
@@ -46,10 +45,7 @@ class DashboardProvider extends ChangeNotifier {
     _notifyIfAlive();
 
     try {
-      await Future.wait<void>([
-        _fetchStatistics(),
-        _fetchRecentOrders(),
-      ]);
+      await Future.wait<void>([_fetchStatistics(), _fetchRecentOrders()]);
     } catch (e, st) {
       // The individual methods handle their own errors.
       // This catch protects against unexpected failures.
@@ -76,9 +72,7 @@ class DashboardProvider extends ChangeNotifier {
       _statistics = result;
       _error = null;
 
-      LoggerService.info(
-        'Dashboard statistics loaded successfully',
-      );
+      LoggerService.info('Dashboard statistics loaded successfully');
     } catch (e, st) {
       if (_disposed) return;
 
@@ -95,18 +89,14 @@ class DashboardProvider extends ChangeNotifier {
   /// Fetch recent orders independently.
   Future<void> _fetchRecentOrders() async {
     try {
-      final result = await _repository.getRecentOrders(
-        limit: 5,
-      );
+      final result = await _repository.getRecentOrders(limit: 5);
 
       if (_disposed) return;
 
       _recentOrders = result;
       _recentOrdersError = null;
 
-      LoggerService.info(
-        'Recent dashboard orders loaded successfully',
-      );
+      LoggerService.info('Recent dashboard orders loaded successfully');
     } catch (e, st) {
       if (_disposed) return;
 

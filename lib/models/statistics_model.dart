@@ -6,10 +6,10 @@ class StatisticsModel {
   final double salesGrowthPercentage;
   final double ordersGrowthPercentage;
   final double customersGrowthPercentage;
-  final String period; // e.g., 'weekly', 'monthly', 'yearly'
+  final String period;
   final DateTime updatedAt;
 
-  StatisticsModel({
+  const StatisticsModel({
     required this.totalSales,
     required this.totalOrders,
     required this.totalCustomers,
@@ -22,17 +22,72 @@ class StatisticsModel {
   });
 
   factory StatisticsModel.fromJson(Map<String, dynamic> json) {
+    final updatedAtValue = json['updated_at'];
+
+    final DateTime? parsedUpdatedAt = updatedAtValue is String
+        ? DateTime.tryParse(updatedAtValue)
+        : updatedAtValue is DateTime
+            ? updatedAtValue
+            : null;
+
+    if (parsedUpdatedAt == null) {
+      throw const FormatException(
+        'فیلد updated_at در پاسخ آمار داشبورد نامعتبر است.',
+      );
+    }
+
     return StatisticsModel(
-      totalSales: (json['total_sales'] as num).toDouble(),
-      totalOrders: json['total_orders'] as int? ?? 0,
-      totalCustomers: json['total_customers'] as int? ?? 0,
-      totalProducts: json['total_products'] as int? ?? 0,
-      salesGrowthPercentage: (json['sales_growth_percentage'] as num?)?.toDouble() ?? 0.0,
-      ordersGrowthPercentage: (json['orders_growth_percentage'] as num?)?.toDouble() ?? 0.0,
-      customersGrowthPercentage: (json['customers_growth_percentage'] as num?)?.toDouble() ?? 0.0,
-      period: json['period'] as String? ?? 'monthly',
-      updatedAt: DateTime.parse(json['updated_at'] as String),
+      totalSales: _requiredNumber(json, 'total_sales').toDouble(),
+      totalOrders: _requiredNumber(json, 'total_orders').toInt(),
+      totalCustomers: _requiredNumber(json, 'total_customers').toInt(),
+      totalProducts: _requiredNumber(json, 'total_products').toInt(),
+      salesGrowthPercentage:
+          _optionalNumber(json, 'sales_growth_percentage').toDouble(),
+      ordersGrowthPercentage:
+          _optionalNumber(json, 'orders_growth_percentage').toDouble(),
+      customersGrowthPercentage:
+          _optionalNumber(json, 'customers_growth_percentage').toDouble(),
+      period: json['period'] is String
+          ? json['period'] as String
+          : 'monthly',
+      updatedAt: parsedUpdatedAt,
     );
+  }
+
+  /// Required numeric values must exist in the server response.
+  static num _requiredNumber(
+    Map<String, dynamic> json,
+    String key,
+  ) {
+    final value = json[key];
+
+    if (value is num) return value;
+
+    if (value is String) {
+      final parsed = num.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+
+    throw FormatException(
+      'فیلد "$key" در پاسخ آمار داشبورد وجود ندارد '
+      'یا عدد معتبر نیست.',
+    );
+  }
+
+  /// Optional growth values default to zero when the server omits them.
+  static num _optionalNumber(
+    Map<String, dynamic> json,
+    String key,
+  ) {
+    final value = json[key];
+
+    if (value is num) return value;
+
+    if (value is String) {
+      return num.tryParse(value) ?? 0;
+    }
+
+    return 0;
   }
 
   Map<String, dynamic> toJson() {
@@ -65,9 +120,12 @@ class StatisticsModel {
       totalOrders: totalOrders ?? this.totalOrders,
       totalCustomers: totalCustomers ?? this.totalCustomers,
       totalProducts: totalProducts ?? this.totalProducts,
-      salesGrowthPercentage: salesGrowthPercentage ?? this.salesGrowthPercentage,
-      ordersGrowthPercentage: ordersGrowthPercentage ?? this.ordersGrowthPercentage,
-      customersGrowthPercentage: customersGrowthPercentage ?? this.customersGrowthPercentage,
+      salesGrowthPercentage:
+          salesGrowthPercentage ?? this.salesGrowthPercentage,
+      ordersGrowthPercentage:
+          ordersGrowthPercentage ?? this.ordersGrowthPercentage,
+      customersGrowthPercentage:
+          customersGrowthPercentage ?? this.customersGrowthPercentage,
       period: period ?? this.period,
       updatedAt: updatedAt ?? this.updatedAt,
     );
