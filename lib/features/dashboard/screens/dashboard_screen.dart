@@ -8,7 +8,7 @@ import '../../../shared/widgets/empty_widget.dart';
 import '../../../shared/widgets/error_widget.dart' as app_error;
 import '../../../providers/dashboard_provider.dart';
 import '../widgets/statistic_card.dart';
-import '../widgets/sales_chart.dart';
+import '../widgets/restaurant_sales_chart.dart'; // Replaced with custom chart
 import '../widgets/category_pie_chart.dart';
 import '../widgets/recent_orders_list.dart';
 
@@ -37,10 +37,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       padding: const EdgeInsets.all(AppSizes.md),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // This width already accounts for the horizontal padding above.
           final contentWidth = constraints.maxWidth;
 
-          // Adapt card columns to the actual available content width.
           final int cardColumns;
           if (contentWidth >= 1050) {
             cardColumns = 3;
@@ -53,7 +51,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final cardWidth =
               (contentWidth - AppSizes.md * (cardColumns - 1)) / cardColumns;
 
-          // Stack charts before they become cramped.
           final stackCharts = contentWidth < 900;
 
           return Consumer<DashboardProvider>(
@@ -67,7 +64,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 );
               }
 
-              // This is a real data-loading error, not a layout placeholder.
               if (provider.error != null && stats == null) {
                 return app_error.AppErrorWidget(
                   message: provider.error!,
@@ -79,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Welcome back!',
+                    'سلام، خوش آمدی!',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -90,25 +86,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: AppSizes.sm),
 
                   Text(
-                    'Here is a summary of your store performance '
-                    'over the last 30 days.',
+                    'در اینجا خلاصه عملکرد فروشگاه شما در ۳۰ روز گذشته آمده است.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.getSecondaryText(context),
                     ),
                   ),
                   const SizedBox(height: AppSizes.lg),
 
-                  // Responsive statistic cards.
+                  // کارت‌های آماری واکنش‌گرا
                   Wrap(
                     spacing: AppSizes.md,
                     runSpacing: AppSizes.md,
                     children: [
                       _buildStatCard(
                         width: cardWidth,
-                        title: 'Total Sales',
+                        title: 'فروش کل',
                         value: stats != null
-                            ? '${stats.totalSales.toStringAsFixed(0)} T'
-                            : 'N/A',
+                            ? '${stats.totalSales.toStringAsFixed(0)} تومان'
+                            : 'ناموجود',
                         icon: Icons.attach_money,
                         iconColor: AppColors.success,
                         changePercentage: stats != null
@@ -117,10 +112,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       _buildStatCard(
                         width: cardWidth,
-                        title: 'New Orders',
+                        title: 'سفارشات جدید',
                         value: stats != null
                             ? stats.totalOrders.toString()
-                            : 'N/A',
+                            : 'ناموجود',
                         icon: Icons.shopping_cart_checkout,
                         iconColor: AppColors.primary,
                         changePercentage: stats != null
@@ -129,10 +124,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       _buildStatCard(
                         width: cardWidth,
-                        title: 'Active Users',
+                        title: 'کاربران فعال',
                         value: stats != null
                             ? stats.totalCustomers.toString()
-                            : 'N/A',
+                            : 'ناموجود',
                         icon: Icons.people_alt_outlined,
                         iconColor: AppColors.accent,
                         changePercentage: stats != null
@@ -144,9 +139,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   const SizedBox(height: AppSizes.lg),
 
-                  // Responsive charts.
+                  // نمودارهای واکنش‌گرا
                   if (stackCharts) ...[
-                    const SizedBox(width: double.infinity, child: SalesChart()),
+                    const SizedBox(width: double.infinity, child: RestaurantSalesChart()),
                     const SizedBox(height: AppSizes.md),
                     const SizedBox(
                       width: double.infinity,
@@ -156,7 +151,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Expanded(flex: 2, child: SalesChart()),
+                        Expanded(flex: 2, child: RestaurantSalesChart()),
                         SizedBox(width: AppSizes.md),
                         Expanded(flex: 1, child: CategoryPieChart()),
                       ],
@@ -165,9 +160,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   const SizedBox(height: AppSizes.lg),
 
-                  // Recent orders.
+                  // آخرین سفارشات
                   Text(
-                    'Recent Orders',
+                    'آخرین سفارشات',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.getPrimaryText(context),
                       fontWeight: FontWeight.bold,
@@ -175,7 +170,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   const SizedBox(height: AppSizes.md),
 
-                  // Recent Orders List
                   if (provider.recentOrdersError != null &&
                       provider.recentOrders.isEmpty &&
                       !provider.isLoading)
@@ -190,8 +184,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     )
                   else if (provider.recentOrders.isEmpty)
                     const EmptyWidget(
-                      title: 'No Recent Orders',
-                      message: 'There are no recent orders to display.',
+                      title: 'سفارش اخیری وجود ندارد',
+                      message: 'هیچ سفارش اخیری برای نمایش وجود ندارد.',
                       icon: Icons.receipt_long_outlined,
                     )
                   else
